@@ -86,8 +86,7 @@ public class RoleEntityServiceImpl extends ServiceImpl<RoleEntityMapper, RoleEnt
             roleDTO.setParentId(item.getParentId());
             roleDTOList.add(roleDTO);
         });
-        List<RoleDTO> treeList = selectTree(0L, roleDTOList);
-        return treeList;
+        return selectTree(0L, roleDTOList);
 
     }
 

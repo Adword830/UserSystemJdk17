@@ -81,12 +81,12 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             throws IOException, ServletException {
         // 获取到指定的token
         String bearerToken = request.getHeader("Authorization");
+        log.info("路径：{}", request.getRequestURL().toString());
         if (bearerToken == null || !bearerToken.startsWith(bearer)) {
             // 释放给下一个过滤器
             chain.doFilter(request, response);
             return;
         }
-        log.info("路径：{}", request.getRequestURL().toString());
         String token = bearerToken.replace(bearer, "");
         // 校验当前token是否合法（包括失效）
         Claims claims = tokenService.checkToken(token);
