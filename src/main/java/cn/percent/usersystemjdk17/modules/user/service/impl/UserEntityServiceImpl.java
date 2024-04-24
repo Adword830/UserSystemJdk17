@@ -3,7 +3,7 @@ package cn.percent.usersystemjdk17.modules.user.service.impl;
 import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.lang.Validator;
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.percent.usersystemjdk17.common.constant.Constant;
 import cn.percent.usersystemjdk17.common.enums.QrCodeStatusEnum;
 import cn.percent.usersystemjdk17.common.exception.BaseException;
@@ -20,7 +20,7 @@ import cn.percent.usersystemjdk17.modules.user.service.QrCodeService;
 import cn.percent.usersystemjdk17.modules.user.service.UserEntityService;
 import cn.percent.usersystemjdk17.modules.userroledept.entity.UserRoleDeptEntity;
 import cn.percent.usersystemjdk17.modules.userroledept.service.UserRoleDeptEntityService;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -33,13 +33,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,31 +80,31 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
     @Resource
     private JavaMailSender mailSender;
 
-    @Autowired
-    private UserRoleDeptEntityService userRoleDeptEntityService;
+    private final UserRoleDeptEntityService userRoleDeptEntityService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final QrCodeService qrCodeService;
 
-    @Autowired
-    private QrCodeService qrCodeService;
+    private final RedisUtils redisUtils;
 
-    @Autowired
-    private RedisUtils redisUtils;
-
-    @Autowired
-    private WebSocketServer webSocketServer;
+    private final WebSocketServer webSocketServer;
 
     @Resource
     private JavaMailSender javaMailSender;
+
+    public UserEntityServiceImpl(UserRoleDeptEntityService userRoleDeptEntityService, QrCodeService qrCodeService, RedisUtils redisUtils, WebSocketServer webSocketServer) {
+        this.userRoleDeptEntityService = userRoleDeptEntityService;
+        this.qrCodeService = qrCodeService;
+        this.redisUtils = redisUtils;
+        this.webSocketServer = webSocketServer;
+    }
 
 
     @Override
     public Page<UserEntity> pageList(UserQuery userQuery) {
         // 构建一个page类这个Page类是Myatis-plus包下的第一个参数代表当前页码，第二个参数表示当前页显示多少条数据
-        Page<UserEntity> page = new Page(userQuery.getPageNum(), userQuery.getPageSize());
+        Page<UserEntity> page = new Page<>(userQuery.getPageNum(), userQuery.getPageSize());
         QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like(StrUtil.isNotEmpty(userQuery.getLoginAcct()), "login_acct", userQuery.getLoginAcct());
+        queryWrapper.like(CharSequenceUtil.isNotEmpty(userQuery.getLoginAcct()), "login_acct", userQuery.getLoginAcct());
         if (userQuery.getFirstLoginTime() != null && userQuery.getFirstLoginTime().size() == 2) {
             queryWrapper.between("first_login_time", userQuery.getFirstLoginTime().get(0), userQuery.getFirstLoginTime().get(1));
         }
@@ -125,7 +125,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
         UserUtils.checkEmail(userQuery.getEmail());
         // 如果昵称为空则默认为登录名
         String userName = userQuery.getUserName();
-        if (StrUtil.isEmpty(userName)) {
+        if (CharSequenceUtil.isEmpty(userName)) {
             userQuery.setUserName(userQuery.getLoginAcct());
         }
         // 判断验证码是否相同
@@ -137,6 +137,8 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
         // 前端传过来的密码都是经过Rsa加密,需要对密码进行解密操作
         String password = Rsa1024Utils.decrypt(userQuery.getUserPswd(), privateKey);
         // 储存进数据库对密码进行加密，使用springSecurity加盐的方式进行加密
+        // 创建 BCryptPasswordEncoder 对象
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String pwd = passwordEncoder.encode(password);
         userQuery.setUserPswd(pwd);
         BeanUtils.copyProperties(userQuery, user);
@@ -162,15 +164,15 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
             throw new BaseException(Constant.EMAIL_IS_EXIST);
         }
         String code = (String) redisUtils.get(email + "#");
-        if (StrUtil.isNotEmpty(code)) {
+        if (CharSequenceUtil.isNotEmpty(code)) {
             throw new BaseException(Constant.REPEAT_GET_CODE);
         }
         // 校验邮箱
         UserUtils.checkEmail(email);
         // 生成对应区间的随机数
-        BigDecimal db = new BigDecimal(Math.random() * (100000 - 1000) + 1000);
+        BigDecimal db = BigDecimal.valueOf(Math.random() * (100000 - 1000) + 1000);
         // B保留整数
-        db.setScale(0, BigDecimal.ROUND_UP);
+        db.setScale(0, RoundingMode.UP);
 
         long longValue = db.longValue();
         try {
@@ -206,7 +208,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void allotRole(UserQuery userQuery) {
-        if (userQuery.getRoleIds() == null || userQuery.getRoleIds().size() == 0) {
+        if (userQuery.getRoleIds() == null || userQuery.getRoleIds().isEmpty()) {
             return;
         }
         // 分配角色前查看是否存在角色
@@ -221,7 +223,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
         roleIdList.removeAll(resList);
         UpdateWrapper<UserRoleDeptEntity> updateWrapper = new UpdateWrapper<>();
         // 删除旧的role角色信息
-        if (roleIdList.size() > 0) {
+        if (!roleIdList.isEmpty()) {
             updateWrapper.lambda().set(UserRoleDeptEntity::getDel, true).eq(UserRoleDeptEntity::getUserId, userQuery.getId())
                     .in(UserRoleDeptEntity::getRoleId, roleIdList);
             userRoleDeptEntityService.update(updateWrapper);
@@ -241,7 +243,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
     public void updateUsePwd(UpdateUserQuery updateUserQuery) {
         UserEntity userEntity = getById(updateUserQuery.getId());
         // 找回密码时需要验证邮箱验证码
-        if (updateUserQuery.getFlag()) {
+        if (Boolean.TRUE.equals(updateUserQuery.getFlag())) {
             String code = (String) redisUtils.get(updateUserQuery.getEmail() + "&");
             if (!Objects.equals(updateUserQuery.getCode(), code)) {
                 throw new BaseException("验证码错误");
@@ -263,7 +265,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
     public void updateUser(UserQuery userQuery) {
         UserEntity user = new UserEntity();
         BeanUtils.copyProperties(userQuery, user);
-        if (StrUtil.isEmpty(user.getUserName())) {
+        if (CharSequenceUtil.isEmpty(user.getUserName())) {
             return;
         }
         UpdateWrapper<UserEntity> queryWrapper = new UpdateWrapper<>();
@@ -273,7 +275,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
 
     @Override
     public UserDTO backUsePwd(String emailOrLoginAcct) {
-        UserEntity userEntity = new UserEntity();
+        UserEntity userEntity;
         // 是邮箱则直接用邮箱查询
         if (Validator.isEmail(emailOrLoginAcct)) {
             // 需要找回密码的用户
@@ -294,10 +296,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
     @Override
     public Boolean checkUUID(String uuid) {
         String imgCodeUUID = (String) redisUtils.get("qrCodeUUID");
-        if (Objects.equals(imgCodeUUID, uuid)) {
-            return true;
-        }
-        return false;
+        return Objects.equals(imgCodeUUID, uuid);
     }
 
     @Override
@@ -322,7 +321,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
         // 扫描成功之后刷新二维码三分钟过期
         redisUtils.set(uuid, QrCodeStatusEnum.SCANNED.getValue().toString(), 3L, TimeUnit.MINUTES);
         try {
-            webSocketServer.sendMessageAll(JSONObject.toJSONString(ApiResultUtils.ok(ApiCodeUtils.QRCODE_SCAN_SUCCESS)), uuid);
+            webSocketServer.sendMessageAll(JSON.toJSONString(ApiResultUtils.ok(ApiCodeUtils.QRCODE_SCAN_SUCCESS)), uuid);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -342,6 +341,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
         String token = bearerToken.replace(ConstantUtil.BEARER, "");
         Claims claims = JwtUtils.getClaims(token);
         // 解析出来的token信息与数据库的用户信息匹配上就可以登录成功
+        assert claims != null;
         String loginAcct = (String) claims.get("loginAcct");
         Long num = this.query().eq("login_acct", loginAcct).count();
         if (num == null) {
@@ -377,7 +377,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
         ClassPathResource resource = new ClassPathResource("/template/mailtemplate.ftl");
         InputStream inputStream = null;
         BufferedReader fileReader = null;
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         String line = "";
         try {
             inputStream = resource.getStream();

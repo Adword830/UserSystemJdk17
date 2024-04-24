@@ -40,10 +40,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
 
-    /**
-     * 用户相关的登录信息储存
-     */
-    private AuthenticationManager authenticationManager;
 
     /**
      * 用户
@@ -66,11 +62,10 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private Integer failNum;
 
-    public JwtLoginFilter(AuthenticationManager authenticationManager, RedisUtils redisUtils, TokenService tokenService,
+    public JwtLoginFilter(RedisUtils redisUtils, TokenService tokenService,
                           UserEntityService userEntityService, ImgCodeService imgCodeService) {
         // 拦截相关的登录请求
         this.redisUtils = redisUtils;
-        this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
         this.userEntityService = userEntityService;
         this.imgCodeService = imgCodeService;

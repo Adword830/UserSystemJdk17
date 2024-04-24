@@ -53,6 +53,7 @@ public class SecurityConfig {
 
     private final ImgCodeService imgCodeService;
 
+
     public SecurityConfig(TokenService tokenService, UserEntityService userEntityService, MyUserDetailsService myUserDetailsService, AuthenticationConfiguration authenticationProvider, RedisUtils redisUtils, ImgCodeService imgCodeService) {
         this.tokenService = tokenService;
         this.userEntityService = userEntityService;
@@ -119,8 +120,7 @@ public class SecurityConfig {
      */
     @Bean
     JwtLoginFilter jwtLoginFilter() throws Exception {
-        JwtLoginFilter filter = new JwtLoginFilter(authenticationProvider.getAuthenticationManager(),
-                redisUtils, tokenService, userEntityService, imgCodeService);
+        JwtLoginFilter filter = new JwtLoginFilter(redisUtils, tokenService, userEntityService,imgCodeService);
         filter.setAuthenticationManager(authenticationProvider.getAuthenticationManager());
         return filter;
     }
