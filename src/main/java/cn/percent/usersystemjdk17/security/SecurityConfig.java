@@ -1,6 +1,5 @@
 package cn.percent.usersystemjdk17.security;
 
-import cn.percent.usersystemjdk17.common.utils.AntUrlPathMatcher;
 import cn.percent.usersystemjdk17.common.utils.RedisUtils;
 import cn.percent.usersystemjdk17.modules.user.service.AuthEntityService;
 import cn.percent.usersystemjdk17.modules.user.service.ImgCodeService;
@@ -13,16 +12,11 @@ import cn.percent.usersystemjdk17.security.handler.JwtLogoutSuccessHandler;
 import cn.percent.usersystemjdk17.security.handler.MyLogoutHandler;
 import cn.percent.usersystemjdk17.security.service.MyUserDetailsService;
 import cn.percent.usersystemjdk17.security.service.TokenService;
-import com.alibaba.fastjson.JSON;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;

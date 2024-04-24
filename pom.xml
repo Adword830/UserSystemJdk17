@@ -13,6 +13,8 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>UserSystemJdk17</name>
     <description>UserSystemJdk17</description>
+    <packaging>jar</packaging>
+
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -185,6 +187,11 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.9.0.2155</version>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

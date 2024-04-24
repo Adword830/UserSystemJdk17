@@ -1,12 +1,11 @@
 package cn.percent.usersystemjdk17.modules.user.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
 
 /**
  * @author zpj

@@ -1,8 +1,6 @@
 package cn.percent.usersystemjdk17.modules.user.controller;
 
 import cn.hutool.core.util.StrUtil;
-
-
 import cn.percent.usersystemjdk17.common.enums.QrCodeStatusEnum;
 import cn.percent.usersystemjdk17.common.server.WebSocketServer;
 import cn.percent.usersystemjdk17.common.utils.ApiResultUtils;
@@ -22,8 +20,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

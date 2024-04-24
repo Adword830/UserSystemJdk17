@@ -4,7 +4,6 @@ import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.StrUtil;
-
 import cn.percent.usersystemjdk17.common.constant.Constant;
 import cn.percent.usersystemjdk17.common.enums.QrCodeStatusEnum;
 import cn.percent.usersystemjdk17.common.exception.BaseException;

@@ -1,7 +1,6 @@
 package cn.percent.usersystemjdk17.modules.role.service.impl;
 
 import cn.hutool.core.util.StrUtil;
-
 import cn.percent.usersystemjdk17.modules.role.entity.RoleEntity;
 import cn.percent.usersystemjdk17.modules.role.mapper.RoleEntityMapper;
 import cn.percent.usersystemjdk17.modules.role.service.RoleEntityService;
@@ -10,7 +9,6 @@ import cn.percent.usersystemjdk17.modules.user.dto.RoleQuery;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

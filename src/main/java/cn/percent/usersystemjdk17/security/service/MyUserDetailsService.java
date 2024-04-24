@@ -1,7 +1,6 @@
 package cn.percent.usersystemjdk17.security.service;
 
 import cn.hutool.core.util.StrUtil;
-
 import cn.percent.usersystemjdk17.modules.role.entity.RoleEntity;
 import cn.percent.usersystemjdk17.modules.role.service.RoleEntityService;
 import cn.percent.usersystemjdk17.modules.user.entity.AuthEntity;
