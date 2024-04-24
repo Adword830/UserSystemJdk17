@@ -25,7 +25,7 @@ jobs:
       - name: Build the Docker image
         run: |
           TIMESTAMP=$(date +%s)
-          docker build . --file ./DockerFile --tag usersystem:$TIMESTAMP
+          docker build . --file ./DockerFile --tag ying520zhang/usersystem:$TIMESTAMP
           echo "DOCKER_IMAGE_TAG=$TIMESTAMP" >> $GITHUB_ENV
       - name: Push the Docker image
         run: |
