@@ -1,0 +1,14 @@
+# 使用 OpenJDK 11 作为基础镜像
+FROM openjdk:17-jre-slim
+
+# 设置工作目录
+WORKDIR /app
+
+# 将编译后的 Java JAR 文件复制到镜像中
+COPY target/UserSystemJdk17.jar /app/UserSystemJdk17.jar
+
+# 暴露应用程序的端口（如果需要的话）
+EXPOSE 8080
+
+# 定义容器启动时执行的命令
+CMD ["java", "-jar", "UserSystemJdk17.jar"]
