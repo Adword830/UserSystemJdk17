@@ -25,9 +25,9 @@ jobs:
       - name: Build the Docker image
         run: |
           TIMESTAMP=$(date +%s)
-          docker build . --file ./DockerFile --tag usersystem-test:$TIMESTAMP
+          docker build . --file ./DockerFile --tag usersystem:$TIMESTAMP
           echo "DOCKER_IMAGE_TAG=$TIMESTAMP" >> $GITHUB_ENV
       - name: Push the Docker image
         run: |
           echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
-          docker push ying520zhang/usersystem-test:${{ env.DOCKER_IMAGE_TAG }}
+          docker push ying520zhang/usersystem:${{ env.DOCKER_IMAGE_TAG }}
