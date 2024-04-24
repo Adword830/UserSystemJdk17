@@ -1,10 +1,10 @@
-name: Docker Image CI
+name: Docker Image CI Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" ]  # Change this to your test branch
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main" ]  # Change this to your test branch
 
 jobs:
 
@@ -23,9 +23,11 @@ jobs:
       - name: Build with Maven
         run: mvn clean package
       - name: Build the Docker image
-        run:
+        run: |
           TIMESTAMP=$(date +%s)
-          docker build . --file ./DockerFile --tag usersystem:$TIMESTAMP
+          docker build . --file ./DockerFile --tag usersystem-test:$TIMESTAMP
           echo "DOCKER_IMAGE_TAG=$TIMESTAMP" >> $GITHUB_ENV
       - name: Push the Docker image
-        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin && docker push ying520zhang/usersystem:$TIMESTAMP
+        run: |
+          echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+          docker push ying520zhang/usersystem-test:${{ env.DOCKER_IMAGE_TAG }}
