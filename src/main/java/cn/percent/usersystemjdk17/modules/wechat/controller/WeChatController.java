@@ -19,8 +19,11 @@ import org.springframework.web.multipart.MultipartFile;
 @Api("微信公众号相关的接口")
 public class WeChatController {
 
-    @Autowired
-    private SendMessage sendMessage;
+    private final SendMessage sendMessage;
+
+    public WeChatController(SendMessage sendMessage) {
+        this.sendMessage = sendMessage;
+    }
 
     /**
      * @param signature 微信加密签名，signature结合了开发者填写的 token 参数和请求中的 timestamp 参数、nonce参数。
