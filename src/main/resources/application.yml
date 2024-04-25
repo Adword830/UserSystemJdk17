@@ -2,8 +2,6 @@ spring:
   output:
     ansi:
       enabled: detect
-  logging:
-    config: classpath:logback-spring.xml
   profiles:
     active: dev
   mvc:
