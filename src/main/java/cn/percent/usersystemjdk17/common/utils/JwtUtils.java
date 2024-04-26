@@ -1,5 +1,6 @@
 package cn.percent.usersystemjdk17.common.utils;
 
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import io.jsonwebtoken.*;
@@ -17,10 +18,6 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    /**
-     * 过期时间
-     */
-    // private static long tokenExpiration = 24*60*60*1000;
     /**
      * 签名秘钥
      */
@@ -90,7 +87,7 @@ public class JwtUtils {
      * @return
      */
     public static Claims getClaims(String token) {
-        if(StrUtil.isEmpty(token)){
+        if(CharSequenceUtil.isEmpty(token)){
             return null;
         }
         Jws<Claims> claimsJws=null;

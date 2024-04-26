@@ -10,6 +10,7 @@ import cn.percent.usersystemjdk17.common.exception.BaseException;
 import cn.percent.usersystemjdk17.common.server.WebSocketServer;
 import cn.percent.usersystemjdk17.common.utils.*;
 import cn.percent.usersystemjdk17.modules.role.entity.RoleEntity;
+import cn.percent.usersystemjdk17.modules.role.service.RoleEntityService;
 import cn.percent.usersystemjdk17.modules.user.dto.QrCodeDTO;
 import cn.percent.usersystemjdk17.modules.user.dto.UpdateUserQuery;
 import cn.percent.usersystemjdk17.modules.user.dto.UserDTO;
@@ -91,11 +92,14 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
     @Resource
     private JavaMailSender javaMailSender;
 
-    public UserEntityServiceImpl(UserRoleDeptEntityService userRoleDeptEntityService, QrCodeService qrCodeService, RedisUtils redisUtils, WebSocketServer webSocketServer) {
+    private final RoleEntityService roleEntityService;
+
+    public UserEntityServiceImpl(UserRoleDeptEntityService userRoleDeptEntityService, QrCodeService qrCodeService, RedisUtils redisUtils, WebSocketServer webSocketServer, RoleEntityService roleEntityService) {
         this.userRoleDeptEntityService = userRoleDeptEntityService;
         this.qrCodeService = qrCodeService;
         this.redisUtils = redisUtils;
         this.webSocketServer = webSocketServer;
+        this.roleEntityService = roleEntityService;
     }
 
 
@@ -176,8 +180,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
 
         long longValue = db.longValue();
         try {
-            //创建简单邮件消息
-            // SimpleMailMessage message = new SimpleMailMessage();
+            // 创建简单邮件消息
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             //谁发的
@@ -187,14 +190,13 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
             //邮件标题
             helper.setSubject(subject);
             //邮件内容
-            // message.setText(subject + "[ " + String.valueOf(longValue) + " ,有效时间3分钟]");
             helper.setText(buildContent(String.valueOf(longValue) + ""), true);
             mailSender.send(message);
             log.info("邮件发送成功");
         } catch (MessagingException e) {
             log.error("邮件发送失败, to: {}, title: {}", email, subject, e);
         }
-        if (backUsePwd) {
+        if (Boolean.TRUE.equals(backUsePwd)) {
             // 找回密码用验证码存储到redis中 key:邮箱&，value：code
             redisUtils.set(email + "&", String.valueOf(longValue), 3L, TimeUnit.MINUTES);
             update(new UpdateWrapper<UserEntity>().eq("email", email).setSql("code_num = code_num+1"));
@@ -212,7 +214,11 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
             return;
         }
         // 分配角色前查看是否存在角色
-        List<Long> roleIdList = this.selectRoleByUserId(userQuery.getId()).stream().map(RoleEntity::getId).collect(Collectors.toList());
+        List<Long> roleIdList = userRoleDeptEntityService.lambdaQuery()
+                .select(UserRoleDeptEntity::getRoleId)
+                .eq(UserRoleDeptEntity::getUserId, userQuery.getId())
+                .eq(UserRoleDeptEntity::getDel, false).list().stream().map(UserRoleDeptEntity::getRoleId).collect(Collectors.toList());
+
         List<Long> resList = new ArrayList<>();
         roleIdList.forEach(item -> {
             if (userQuery.getRoleIds().contains(item)) {

@@ -81,7 +81,6 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             throws IOException, ServletException {
         // 获取到指定的token
         String bearerToken = request.getHeader("Authorization");
-        log.info("路径：{}", request.getRequestURL().toString());
         if (bearerToken == null || !bearerToken.startsWith(bearer)) {
             // 释放给下一个过滤器
             chain.doFilter(request, response);
@@ -90,53 +89,23 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         String token = bearerToken.replace(bearer, "");
         // 校验当前token是否合法（包括失效）
         Claims claims = tokenService.checkToken(token);
-        if (claims == null) {
-            // 获取到refreshToken
-            String refreshToken = request.getHeader("refreshToken");
+        // 是否accessToken的校验
+        String status = (String) claims.get("status");
+        if (accessToken.equals(status)) {
             // 用户id
-            try {
-                // 校验刷新token是否有效 有效果直接放行前端并且告诉前端调用刷新token的controller
-                Claims refreshClaims = tokenService.checkToken(refreshToken);
-                if (refreshClaims == null) {
-                    ResponseDTO dto = new ResponseDTO(ApiCodeUtils.LOGON__FAILURE.getCode(), ApiCodeUtils.LOGON__FAILURE.getMsg());
-                    ApiResultUtils.write(response, JSON.toJSONString(dto));
-                    return;
-                }
-                // 用户id
-                Long userId = (Long) refreshClaims.get("userId");
-                UserEntity userEntity = userEntityService.lambdaQuery().eq(UserEntity::getId, userId).one();
-                if (userEntity.getDisable().equals(1)) {
-                    ResponseDTO dto = new ResponseDTO(ApiCodeUtils.USER_DISABLE.getCode(), ApiCodeUtils.USER_DISABLE.getMsg());
-                    ApiResultUtils.write(response, JSON.toJSONString(dto));
-                    return;
-                }
-                 String loginAcct = (String) refreshClaims.get("loginAcct");
-                 MyUserDetails userDetails = myUserDetailsService.loadUserByUsername(loginAcct);
-                 SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(loginAcct, UserUtils.getUser(userId).getUserPswd(), userDetails.getAuthorities()));
-            } catch (Exception e) {
-                e.printStackTrace();
-                ResponseDTO dto = new ResponseDTO(ApiCodeUtils.LOGON__FAILURE.getCode(), ApiCodeUtils.LOGON__FAILURE.getMsg());
+            Long userId = (Long) claims.get("userId");
+            UserEntity userEntity = userEntityService.lambdaQuery().eq(UserEntity::getId, userId).one();
+            if (Boolean.TRUE.equals(userEntity.getDisable())) {
+                ResponseDTO dto = new ResponseDTO<>(ApiCodeUtils.USER_DISABLE.getCode(), ApiCodeUtils.USER_DISABLE.getMsg());
                 ApiResultUtils.write(response, JSON.toJSONString(dto));
                 return;
             }
-        } else {
-            // 是否accessToken的校验
-            String status = (String) claims.get("status");
-            if (accessToken.equals(status)) {
-                // 用户id
-                Long userId = (Long) claims.get("userId");
-                UserEntity userEntity = userEntityService.lambdaQuery().eq(UserEntity::getId, userId).one();
-                if (userEntity.getDisable().equals(1)) {
-                    ResponseDTO dto = new ResponseDTO(ApiCodeUtils.USER_DISABLE.getCode(), ApiCodeUtils.USER_DISABLE.getMsg());
-                    ApiResultUtils.write(response, JSON.toJSONString(dto));
-                    return;
-                }
-                 String loginAcct = (String) claims.get("loginAcct");
-                 MyUserDetails userDetails = myUserDetailsService.loadUserByUsername(loginAcct);
-                 // 将用户信息设置给Security
-                 SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(loginAcct, UserUtils.getUser(userId).getUserPswd(), userDetails.getAuthorities()));
+             String loginAcct = (String) claims.get("loginAcct");
+             MyUserDetails userDetails = myUserDetailsService.loadUserByUsername(loginAcct);
+             // 将用户信息设置给Security
+             SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(loginAcct, UserUtils.getUser(userId).getUserPswd(), userDetails.getAuthorities()));
             }
-        }
+
         // 释放给下一个过滤器
         chain.doFilter(request, response);
         log.info("成功：{}", request.getRequestURL().toString());

@@ -64,10 +64,10 @@ logging:
 jwt:
   access:
     token:
-      expiration: 1 # token存在时间
+      expiration: 10 # token存在时间
   refresh:
     token:
-      expiration: 3 # 刷新token存在时间
+      expiration: 30 # 刷新token存在时间
 
 swagger:
   enable: true

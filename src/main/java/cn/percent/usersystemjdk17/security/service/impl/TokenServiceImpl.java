@@ -5,6 +5,7 @@ import cn.percent.usersystemjdk17.common.utils.RedisUtils;
 import cn.percent.usersystemjdk17.modules.user.dto.LoginDTO;
 import cn.percent.usersystemjdk17.modules.user.dto.TokenDTO;
 import cn.percent.usersystemjdk17.security.service.TokenService;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +32,11 @@ public class TokenServiceImpl implements TokenService {
     @Value("${jwt.refresh.token.expiration}")
     private Long refreshTokenExpiration;
 
-    @Autowired
-    private RedisUtils redisUtils;
+    private final RedisUtils redisUtils;
+
+    public TokenServiceImpl(RedisUtils redisUtils) {
+        this.redisUtils = redisUtils;
+    }
 
     @Override
     public TokenDTO getToken(LoginDTO loginDTO, Boolean refreshed) {
@@ -44,7 +48,7 @@ public class TokenServiceImpl implements TokenService {
                 TimeUnit.MINUTES.toMillis(tokenExpiration),"accessToken");
         tokenDTO.setAccessToken(accessToken);
         // 是否生成刷新token
-        if(refreshed){
+        if(Boolean.TRUE.equals(refreshed)){
             String refreshToken = JwtUtils.createToken(loginDTO.getId(), loginDTO.getUsername(),
                     TimeUnit.MINUTES.toMillis(refreshTokenExpiration),"refreshToken");
             tokenDTO.setRefreshToken(refreshToken);
@@ -56,21 +60,18 @@ public class TokenServiceImpl implements TokenService {
     public Claims checkToken(String token) {
         try {
             Claims claims = JwtUtils.getClaims(token);
-            Long userId = JSONObject.parseObject(JSONObject.toJSONString(claims.get("userId")) ,
+            assert claims != null;
+            Long userId = JSON.parseObject(JSON.toJSONString(claims.get("userId")) ,
                     Long.class);
-            if (redisUtils.get(String.valueOf(userId)) != null) {
-                TokenDTO tokenDTO = JSONObject.parseObject((String) redisUtils.get(String.valueOf(userId)), TokenDTO.class);
+            if (redisUtils.get("token:"+ userId) != null) {
+                TokenDTO tokenDTO = JSON.parseObject((String) redisUtils.get("token:"+ userId), TokenDTO.class);
                 if (Objects.equals(token, tokenDTO.getAccessToken())) {
                     return claims;
                 }
-                if (Objects.equals(token, tokenDTO.getRefreshToken())) {
-                    return claims;
-                }
             }
-            return null;
         }catch(Exception e) {
             log.info("token解析失败，请检测token格式是否正确,错误信息:{}",e.getMessage());
-            return null;
         }
+        return null;
     }
 }

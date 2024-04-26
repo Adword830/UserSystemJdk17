@@ -35,17 +35,20 @@ import java.util.List;
 @Api("用户管理模块")
 public class UserApiController {
 
-    @Autowired
-    private UserEntityService userEntityService;
+    private final UserEntityService userEntityService;
 
-    @Autowired
-    private ImgCodeService imgCodeService;
+    private final ImgCodeService imgCodeService;
 
-    @Autowired
-    private RedisUtils redisUtils;
+    private final RedisUtils redisUtils;
 
-    @Autowired
-    private WebSocketServer webSocketServer;
+    private final WebSocketServer webSocketServer;
+
+    public UserApiController(UserEntityService userEntityService, ImgCodeService imgCodeService, RedisUtils redisUtils, WebSocketServer webSocketServer) {
+        this.userEntityService = userEntityService;
+        this.imgCodeService = imgCodeService;
+        this.redisUtils = redisUtils;
+        this.webSocketServer = webSocketServer;
+    }
 
     /**
      * 当前方法可以查询所有的用户信息超级管理员可以查看
@@ -116,7 +119,7 @@ public class UserApiController {
                                               @RequestParam(required = false, defaultValue = "false", name = "backUsePwd") Boolean backUsePwd,
                                               @RequestParam(required = false, name = "id") Long id) {
         // 如果是找回密码发送验证码
-        if (backUsePwd) {
+        if (Boolean.TRUE.equals(backUsePwd)) {
             UserEntity userEntity = userEntityService.getById(id);
             userEntityService.sendMessage(userEntity.getEmail(), backUsePwd);
             return ApiResultUtils.ok();

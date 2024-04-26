@@ -24,14 +24,14 @@
         first_login_time,last_login_time,del
     </sql>
 
-    <select id="selectRoleByUserId" resultType="cn.percent.usersystemjdk17.modules.user.entity.UserEntity">
+    <select id="selectRoleByUserId" resultType="cn.percent.usersystemjdk17.modules.role.entity.RoleEntity">
         SELECT
             *
         FROM
             role AS r
                 LEFT JOIN user_role_dept AS iur ON r.id = iur.role_id
         WHERE
-            user_id = #{userId}
+            iur.user_id = #{userId}
         AND
             iur.del=0
     </select>

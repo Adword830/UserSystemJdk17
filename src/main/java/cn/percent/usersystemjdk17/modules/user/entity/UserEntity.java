@@ -29,6 +29,7 @@ public class UserEntity implements Serializable {
     /**
      * 登录名
      */
+    @TableField(value = "login_acct")
     private String loginAcct;
 
     /**
@@ -84,7 +85,7 @@ public class UserEntity implements Serializable {
      * 是否禁用
      */
     @TableField(value = "disable")
-    private Integer disable;
+    private Boolean disable;
 
     /**
      * 删除标识
