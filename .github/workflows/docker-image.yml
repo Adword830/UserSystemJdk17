@@ -31,3 +31,23 @@ jobs:
         run: |
           echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
           docker push ying520zhang/usersystem:${{ env.DOCKER_IMAGE_TAG }}
+
+      - name: 安装阿里云 CLI
+        run: |
+          curl -o alibabacloud-cli https://raw.githubusercontent.com/aliyun/aliyun-cli/master/install.sh
+          bash install.sh
+          rm install.sh
+
+      - name: 配置阿里云 CLI
+        run: |
+          ecs configure --profile default \
+            --access-key-id ${{ secrets.ALIYUN_ACCESS_KEY_ID }} \
+            --access-key-secret ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+
+      - name: 连接到阿里云 ECS
+        run: |
+          ecs login --region-id ${{ secrets.ALIYUN_REGION_ID }} \
+            --instance-id ${{ secrets.ALIYUN_INSTANCE_ID }}
+
+      - name: 拉取镜像
+        run: docker pullying520zhang/usersystem:${{ env.DOCKER_IMAGE_TAG }}
