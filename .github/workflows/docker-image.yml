@@ -34,8 +34,8 @@ jobs:
 
       - name: 安装阿里云 CLI
         run: |
-          curl -o alibabacloud-cli https://raw.githubusercontent.com/aliyun/aliyun-cli/master/install.sh
-          bash install.sh
+          curl -o alibabacloud-cli https://raw.githubusercontent.com/aliyun/aliyun-cli/master/install.sh || exit 1
+          bash install.sh || exit 1
           rm install.sh
 
       - name: 配置阿里云 CLI
