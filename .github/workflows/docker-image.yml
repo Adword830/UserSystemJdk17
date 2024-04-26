@@ -59,3 +59,5 @@ jobs:
 
       - name: 拉取镜像
         run: docker pull ying520zhang/usersystem:${{ env.DOCKER_IMAGE_TAG }}
+      - name: 输出拉取镜像的日志
+        run: docker images | grep ying520zhang/usersystem:${{ env.DOCKER_IMAGE_TAG }}
