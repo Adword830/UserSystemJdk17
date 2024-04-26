@@ -36,11 +36,14 @@ jobs:
         run: |
           curl -o install.sh https://raw.githubusercontent.com/aliyun/aliyun-cli/master/install.sh || exit 1
           bash install.sh || exit 1
+          echo "export PATH=$PATH:/usr/local/bin" >> ~/.bashrc
+          source ~/.bashrc
           rm install.sh
 
       - name: 配置阿里云 CLI
         run: |
-          ecs configure --profile default \
+          source ~/.bashrc
+          aliyun configure --profile default \
             --access-key-id ${{ secrets.ALIYUN_ACCESS_KEY_ID }} \
             --access-key-secret ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
 
