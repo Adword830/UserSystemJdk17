@@ -50,8 +50,9 @@ jobs:
 
       - name: 连接到阿里云 ECS
         run: |
-          ecs login --region-id ${{ secrets.ALIYUN_REGION_ID }} \
-            --instance-id ${{ secrets.ALIYUN_INSTANCE_ID }}
+          source ~/.bashrc
+          aliyun ecs DescribeInstances --RegionId ${{ secrets.ALIYUN_REGION_ID }} \
+            --InstanceIds '["${{ secrets.ALIYUN_INSTANCE_ID }}"]'
 
       - name: 拉取镜像
         run: docker pull ying520zhang/usersystem:${{ env.DOCKER_IMAGE_TAG }}
