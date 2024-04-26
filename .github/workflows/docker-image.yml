@@ -54,5 +54,8 @@ jobs:
           aliyun ecs DescribeInstances --RegionId ${{ secrets.ALIYUN_REGION_ID }} \
             --InstanceIds '["${{ secrets.ALIYUN_INSTANCE_ID }}"]'
 
+      - name: 延迟
+        run: sleep 5
+
       - name: 拉取镜像
         run: docker pull ying520zhang/usersystem:${{ env.DOCKER_IMAGE_TAG }}
