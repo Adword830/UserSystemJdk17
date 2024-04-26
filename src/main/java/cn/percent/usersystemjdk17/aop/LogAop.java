@@ -1,15 +1,12 @@
 package cn.percent.usersystemjdk17.aop;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
-import cn.percent.usersystemjdk17.common.utils.ApiCodeUtils;
-import cn.percent.usersystemjdk17.common.utils.ApiResultUtils;
 import cn.percent.usersystemjdk17.common.utils.IpUtils;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -19,6 +16,9 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * @author zhangpengju
+ */
 @Slf4j
 @Aspect
 @Component
@@ -43,17 +43,9 @@ public class LogAop {
         map.put("token", request.getHeader("Authorization"));
 
         log.info("请求参数:{}", JSON.toJSONString(map));
-
         Object result = joinPoint.proceed();
+        log.info("返回的参数:{}",JSON.toJSONString(result));
 
-        if (result instanceof ApiResultUtils apiResult) {
-            String responseResultInfo = JSON.toJSONString(apiResult);
-            if (apiResult.getCode() == ApiCodeUtils.SUCCESS.getCode()) {
-                log.info("返回的参数:{}",responseResultInfo);
-            } else {
-                log.warn("返回的参数:{}",responseResultInfo);
-            }
-        }
         return result;
     }
 }
