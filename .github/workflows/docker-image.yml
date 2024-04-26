@@ -46,8 +46,7 @@ jobs:
           aliyun configure set --profile default \
             --access-key-id ${{ secrets.ALIYUN_ACCESS_KEY_ID }} \
             --access-key-secret ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }} \
-            --region cn-shenzhen \
-            --output json
+            --region cn-shenzhen
 
       - name: 连接到阿里云 ECS
         run: |
@@ -55,4 +54,4 @@ jobs:
             --instance-id ${{ secrets.ALIYUN_INSTANCE_ID }}
 
       - name: 拉取镜像
-        run: docker pullying520zhang/usersystem:${{ env.DOCKER_IMAGE_TAG }}
+        run: docker pull ying520zhang/usersystem:${{ env.DOCKER_IMAGE_TAG }}
