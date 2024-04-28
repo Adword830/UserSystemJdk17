@@ -1,5 +1,7 @@
 package cn.percent.usersystemjdk17.modules.dept.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -22,6 +24,7 @@ public class DeptEntity implements Serializable {
     */
     @NotNull(message="[主键]不能为空")
     @ApiModelProperty("主键")
+    @TableId(type = IdType.ASSIGN_ID)
     private Long deptId;
     /**
     * 部门名称
