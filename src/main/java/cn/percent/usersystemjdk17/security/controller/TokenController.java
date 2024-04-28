@@ -14,7 +14,6 @@ import cn.percent.usersystemjdk17.security.service.TokenService;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.jsonwebtoken.Claims;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,17 +31,20 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/token")
 public class TokenController {
 
-    @Autowired
-    private TokenService tokenService;
+    private final TokenService tokenService;
 
-    @Autowired
-    private RedisUtils redisUtils;
+    private final RedisUtils redisUtils;
 
     @Value("${jwt.refresh.token.expiration}")
     private Long refreshTokenExpiration;
     
-    @Autowired
-    private UserEntityService userEntityService;
+    private final UserEntityService userEntityService;
+
+    public TokenController(TokenService tokenService, RedisUtils redisUtils, UserEntityService userEntityService) {
+        this.tokenService = tokenService;
+        this.redisUtils = redisUtils;
+        this.userEntityService = userEntityService;
+    }
 
     /**
      * 刷新token

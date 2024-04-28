@@ -1,11 +1,14 @@
 package cn.percent.usersystemjdk17.modules.wechat.enums;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 
 /**
  * @author pengju.zhang
  * @date 2022-09-02 11:56
  */
+@Getter
 public enum MsgType {
 
     /**
@@ -23,8 +26,8 @@ public enum MsgType {
     MUSIC("music","音乐消息"),
     IMAGE("image","图片消息");
 
-    private String key;
-    private String value;
+    private final String key;
+    private final String value;
 
     MsgType(String key, String value) {
         this.key = key;
@@ -39,24 +42,9 @@ public enum MsgType {
      */
     public static MsgType resovle(Integer key) {
         return Arrays.stream(values())
-                .filter(status -> status.value.equals(key))
+                .filter(status -> false)
                 .findAny()
                 .orElseThrow(() -> new RuntimeException("Illegal code: " + key));
     }
 
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
 }

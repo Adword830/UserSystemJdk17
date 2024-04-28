@@ -1,12 +1,16 @@
 package cn.percent.usersystemjdk17.modules.wechat.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.exceptions.ExceptionUtil;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.percent.usersystemjdk17.modules.wechat.constant.Constant;
 import cn.percent.usersystemjdk17.modules.wechat.entity.*;
 import cn.percent.usersystemjdk17.modules.wechat.enums.MsgType;
 import cn.percent.usersystemjdk17.modules.wechat.service.SendMessage;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
@@ -64,8 +68,11 @@ public class SendMessageImpl implements SendMessage {
     @Value("${holiday.url}")
     private String holiday;
 
-    @Autowired
-    private WxMpService wxMpService;
+    private final WxMpService wxMpService;
+
+    public SendMessageImpl(WxMpService wxMpService) {
+        this.wxMpService = wxMpService;
+    }
 
 
     @Override
@@ -79,8 +86,7 @@ public class SendMessageImpl implements SendMessage {
         wxMpTemplateMessage.setToUser(toUser);
         // 天气类
         String weather = this.getWeather();
-        WeatherEntity weatherEntity = null;
-        // Date date = DateUtil.parse("2022-09-23").toJdkDate();
+        WeatherEntity weatherEntity;
         Date date = new Date();
         // 构建消息格式
         List<WxMpTemplateData> listData = new ArrayList<>(12);
@@ -91,8 +97,8 @@ public class SendMessageImpl implements SendMessage {
         Map<String, String> restDay = this.getRestDay(date, holiday);
         String format = simpleDateFormat.format(date);
 
-        if (holiday == null || holiday.get(format) == null) {
-            if (restDay == null || restDay.size() == 0) {
+        if (holiday.get(format) == null) {
+            if (restDay == null || restDay.isEmpty()) {
                 weatherEntity = this.createWorkTemplate(date, flag, listData, weather);
             } else {
                 weatherEntity = this.createRestDayTemplate(date, flag, listData, restDay, format, weather);
@@ -106,12 +112,10 @@ public class SendMessageImpl implements SendMessage {
         // 放进模板对象。准备发送
         wxMpTemplateMessage.setData(listData);
         try {
-            if (weatherEntity != null) {
-                // 发送模板
-                wxTemplateResult = wxMpService.getTemplateMsgService().sendTemplateMsg(wxMpTemplateMessage);
-                if (StrUtil.isNotEmpty(wxTemplateResult)) {
-                    log.info("发送成功");
-                }
+            // 发送模板
+            wxTemplateResult = wxMpService.getTemplateMsgService().sendTemplateMsg(wxMpTemplateMessage);
+            if (CharSequenceUtil.isNotEmpty(wxTemplateResult)) {
+                log.info("发送成功");
             }
         } catch (WxErrorException e) {
             e.printStackTrace();
@@ -130,8 +134,7 @@ public class SendMessageImpl implements SendMessage {
         wxMpTemplateMessage.setToUser(openApi);
         // 天气类
         String weather = this.getWeather();
-        WeatherEntity weatherEntity = null;
-        // Date date = DateUtil.parse("2022-09-23").toJdkDate();
+        WeatherEntity weatherEntity;
         Date date = new Date();
         // 构建消息格式
         List<WxMpTemplateData> listData = new ArrayList<>(12);
@@ -142,8 +145,8 @@ public class SendMessageImpl implements SendMessage {
         Map<String, String> restDay = this.getRestDay(date, holiday);
         String format = simpleDateFormat.format(date);
 
-        if (holiday == null || holiday.get(format) == null) {
-            if (restDay == null || restDay.size() == 0) {
+        if (holiday.get(format) == null) {
+            if (restDay == null || restDay.isEmpty()) {
                 weatherEntity = this.createWorkTemplate(date, flag, listData, weather);
             } else {
                 weatherEntity = this.createRestDayTemplate(date, flag, listData, restDay, format, weather);
@@ -157,12 +160,10 @@ public class SendMessageImpl implements SendMessage {
         // 放进模板对象。准备发送
         wxMpTemplateMessage.setData(listData);
         try {
-            if (weatherEntity != null) {
-                // 发送模板
-                wxTemplateResult = wxMpService.getTemplateMsgService().sendTemplateMsg(wxMpTemplateMessage);
-                if (StrUtil.isNotEmpty(wxTemplateResult)) {
-                    log.info("发送成功");
-                }
+            // 发送模板
+            wxTemplateResult = wxMpService.getTemplateMsgService().sendTemplateMsg(wxMpTemplateMessage);
+            if (CharSequenceUtil.isNotEmpty(wxTemplateResult)) {
+                log.info("发送成功");
             }
         } catch (WxErrorException e) {
             e.printStackTrace();
@@ -172,7 +173,7 @@ public class SendMessageImpl implements SendMessage {
 
     @Override
     public OutMsgEntity inMessage(InMsgEntity inMsgEntity) {
-        if (inMsgEntity == null || StrUtil.isEmpty(inMsgEntity.getContent())) {
+        if (inMsgEntity == null || CharSequenceUtil.isEmpty(inMsgEntity.getContent())) {
             return null;
         }
         OutMsgEntity outMsgEntity = new OutMsgEntity();
@@ -246,20 +247,16 @@ public class SendMessageImpl implements SendMessage {
         String post = null;
         File file = null;
         try {
-            String[] split = multipartFile.getOriginalFilename().split("\\.");
+            String[] split = "\\.".split(Objects.requireNonNull(multipartFile.getOriginalFilename()));
             file = File.createTempFile(UUID.randomUUID().toString(), "." + split[1]);
             multipartFile.transferTo(file);
             post = HttpUtil.createPost(upload + wxMpService.getAccessToken() + "&type=" + type)
                     .form("description", description)
                     .form("media", file).execute().body();
-        } catch (WxErrorException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (WxErrorException | IOException e) {
+                log.error(ExceptionUtil.getMessage(e));
         } finally {
-            if (file != null) {
-                file.deleteOnExit();
-            }
+            FileUtil.del(file);
         }
         return post;
     }
@@ -274,7 +271,7 @@ public class SendMessageImpl implements SendMessage {
         try {
             post = HttpUtil.post(mediaList + wxMpService.getAccessToken(), JSONObject.toJSONString(map));
         } catch (WxErrorException e) {
-            e.printStackTrace();
+            log.error(ExceptionUtil.getMessage(e));
         }
         return post;
     }
@@ -288,7 +285,7 @@ public class SendMessageImpl implements SendMessage {
             json = HttpUtil.get(weatherUrl);
         } catch (Exception e) {
             json = HttpUtil.get(weatherUrl);
-            e.printStackTrace();
+            log.error(ExceptionUtil.getMessage(e));
         }
         return json;
     }
@@ -349,7 +346,7 @@ public class SendMessageImpl implements SendMessage {
                 day = birthCal.get(Calendar.DAY_OF_YEAR) - now.get(Calendar.DAY_OF_YEAR);
             }
         } catch (ParseException e) {
-            e.printStackTrace();
+            log.error(ExceptionUtil.getMessage(e));
         }
         return day;
     }
@@ -389,7 +386,7 @@ public class SendMessageImpl implements SendMessage {
                 day = now.get(Calendar.DAY_OF_YEAR) - toge.get(Calendar.DAY_OF_YEAR);
             }
         } catch (ParseException e) {
-            e.printStackTrace();
+            log.error(ExceptionUtil.getMessage(e));
         }
         return day;
     }
@@ -406,15 +403,14 @@ public class SendMessageImpl implements SendMessage {
         calendar.setTime(date);
         String yearMonth = DateUtil.format(DateUtil.date(), "yyyy-MM");
         String url = holiday + yearMonth;
-        // System.setProperty("https.protocols", "TLSv1.2,TLSv1.1,SSLv3");
         String body = HttpUtil.createGet(url).timeout(30000).execute().body();
-        JSONObject jsonObject = JSONObject.parseObject(body);
+        JSONObject jsonObject = JSON.parseObject(body);
         JSONObject holiday = jsonObject.getJSONObject("holiday");
         int i = holiday.size();
         for (Map.Entry<String, Object> entry : holiday.entrySet()) {
             JSONObject value = (JSONObject) entry.getValue();
             Boolean holidayFlag = value.getBoolean("holiday");
-            if (holidayFlag) {
+            if (Boolean.TRUE.equals(holidayFlag)) {
                 String name = value.getString("name");
                 String time = value.getString("date");
                 result.put(time, name + "," + i);
@@ -436,7 +432,6 @@ public class SendMessageImpl implements SendMessage {
         calendar.setTime(date);
         String yearMonth = DateUtil.format(DateUtil.date(), "yyyy-MM");
         String url = holiday + yearMonth;
-        // System.setProperty("https.protocols", "TLSv1.2,TLSv1.1,SSLv3");
         String body = HttpUtil.createGet(url).timeout(30000).execute().body();
         JSONObject jsonObject = JSONObject.parseObject(body);
         JSONObject holiday = jsonObject.getJSONObject("holiday");
@@ -444,7 +439,7 @@ public class SendMessageImpl implements SendMessage {
         for (Map.Entry<String, Object> entry : holiday.entrySet()) {
             JSONObject value = (JSONObject) entry.getValue();
             Boolean holidayFlag = value.getBoolean("holiday");
-            if (!holidayFlag) {
+            if (Boolean.FALSE.equals(holidayFlag)) {
                 String name = value.getString("name");
                 String time = value.getString("date");
                 result.put(time, name + "," + i);
@@ -483,7 +478,7 @@ public class SendMessageImpl implements SendMessage {
         }
         for (Map.Entry<String, String> rest : restDay.entrySet()) {
             // 判断是否有周六或者周日补班
-            if (makeDay.size() == 0) {
+            if (makeDay.isEmpty()) {
                 return restDay;
             } else {
                 for (Map.Entry<String, String> make : makeDay.entrySet()) {
@@ -493,7 +488,7 @@ public class SendMessageImpl implements SendMessage {
                 }
             }
             // 判断是否有假期和休息日冲突
-            if (holiday.size() == 0) {
+            if (holiday.isEmpty()) {
                 return restDay;
             } else {
                 for (Map.Entry<String, String> holi : holiday.entrySet()) {
@@ -526,7 +521,7 @@ public class SendMessageImpl implements SendMessage {
 
         // 早上
         if (flag == 1) {
-            weatherEntity = JSONObject.parseObject(weather, WeatherEntity.class);
+            weatherEntity = JSON.parseObject(weather, WeatherEntity.class);
             first = new WxMpTemplateData("first", "一日之计在于晨，早上起床记得刷牙洗脸"
                     , "#173177");
             String text = "早上天气: ";
@@ -535,7 +530,7 @@ public class SendMessageImpl implements SendMessage {
         }
         // 中午下班前半小时
         if (flag == 2) {
-            weatherEntity = JSONObject.parseObject(weather, WeatherEntity.class);
+            weatherEntity = JSON.parseObject(weather, WeatherEntity.class);
             first = new WxMpTemplateData("first", "干饭人，干饭魂马上到中午吃饭啦"
                     , "#173177");
             String text = "中午天气: ";
@@ -544,7 +539,7 @@ public class SendMessageImpl implements SendMessage {
         }
         // 下班
         if (flag == 3) {
-            weatherEntity = JSONObject.parseObject(weather, WeatherEntity.class);
+            weatherEntity = JSON.parseObject(weather, WeatherEntity.class);
             first = new WxMpTemplateData("first", "下班啦下班啦，回家路上要注意安全"
                     , "#173177");
             String text = "下午天气: ";
@@ -656,7 +651,7 @@ public class SendMessageImpl implements SendMessage {
         WxMpTemplateData second = new WxMpTemplateData("second", "当前是: " + format2, "#173177");
         // 早上
         if (flag == 1) {
-            weatherEntity = JSONObject.parseObject(weather, WeatherEntity.class);
+            weatherEntity = JSON.parseObject(weather, WeatherEntity.class);
             first = new WxMpTemplateData("first", "今天是" + holidayName + ",是休息日要好好休息不要熬夜哦"
                     , "#173177");
             String text = "今天天气: ";
