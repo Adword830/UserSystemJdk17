@@ -77,7 +77,7 @@ public class SendMessageImpl implements SendMessage {
 
     @Override
     public String send(int flag) {
-        log.info("进入发送模版信息");
+        log.info("进入发送模版信息====>");
         // 实例化模板对象
         WxMpTemplateMessage wxMpTemplateMessage = new WxMpTemplateMessage();
         // 设置模板ID
@@ -127,7 +127,7 @@ public class SendMessageImpl implements SendMessage {
 
     @Override
     public String send(int flag, String openApi) {
-        log.info("进入发送模版信息");
+        log.info("进入发送模版信息=======>");
         // 实例化模板对象
         WxMpTemplateMessage wxMpTemplateMessage = new WxMpTemplateMessage();
         // 设置模板ID
