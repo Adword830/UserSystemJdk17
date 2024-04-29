@@ -10,7 +10,7 @@ import cn.percent.usersystemjdk17.modules.user.service.UserEntityService;
 import cn.percent.usersystemjdk17.security.dto.ResponseDTO;
 import cn.percent.usersystemjdk17.security.service.MyUserDetailsService;
 import cn.percent.usersystemjdk17.security.service.TokenService;
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

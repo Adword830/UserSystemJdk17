@@ -1,7 +1,7 @@
 package cn.percent.usersystemjdk17.security.interceptor;
 
 import cn.percent.usersystemjdk17.modules.user.entity.UserEntity;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDeniedException;
@@ -40,8 +40,7 @@ public class JwtAccessDecisionManager implements AccessDecisionManager {
         }
         // 获取到指定的对象
         String jsonString = JSONObject.toJSONString(authentication.getPrincipal());
-        JSONObject jsonObject = JSONObject.parseObject(jsonString);
-        UserEntity user = JSONObject.toJavaObject(jsonObject, UserEntity.class);
+        UserEntity user  = JSONObject.parseObject(jsonString,UserEntity.class);
         // 授权码不想同则无权访问
         configAttributes.forEach(item->{
             Boolean flag=!user.getId().toString().equals(item.getAttribute());

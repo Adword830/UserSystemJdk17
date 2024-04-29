@@ -2,7 +2,7 @@ package cn.percent.usersystemjdk17.common.utils;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import io.jsonwebtoken.*;
 import org.springframework.stereotype.Component;
 

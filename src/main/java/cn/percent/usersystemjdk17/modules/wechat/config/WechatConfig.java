@@ -1,8 +1,9 @@
 package cn.percent.usersystemjdk17.modules.wechat.config;
 
-import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
+
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
+import me.chanjar.weixin.mp.config.impl.WxMpDefaultConfigImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +24,7 @@ public class WechatConfig {
     @Bean
     public WxMpService wxMpService() {
         WxMpService service = new WxMpServiceImpl();
-        WxMpInMemoryConfigStorage storage = new WxMpInMemoryConfigStorage();
+        WxMpDefaultConfigImpl storage = new WxMpDefaultConfigImpl();
         storage.setAppId(appid);
         storage.setSecret(appsecret);
         service.setWxMpConfigStorage(storage);

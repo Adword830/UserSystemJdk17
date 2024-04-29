@@ -4,7 +4,7 @@ package cn.percent.usersystemjdk17.security.handler;
 import cn.percent.usersystemjdk17.common.utils.ApiCodeUtils;
 import cn.percent.usersystemjdk17.common.utils.ApiResultUtils;
 import cn.percent.usersystemjdk17.security.dto.ResponseDTO;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -8,7 +8,7 @@ import cn.percent.usersystemjdk17.modules.user.entity.UserEntity;
 import cn.percent.usersystemjdk17.modules.user.service.UserEntityService;
 import cn.percent.usersystemjdk17.security.dto.ResponseDTO;
 import cn.percent.usersystemjdk17.security.service.TokenService;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;

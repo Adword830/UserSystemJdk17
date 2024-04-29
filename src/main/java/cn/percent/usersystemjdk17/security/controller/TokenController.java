@@ -11,7 +11,7 @@ import cn.percent.usersystemjdk17.modules.user.dto.UserDTO;
 import cn.percent.usersystemjdk17.modules.user.entity.UserEntity;
 import cn.percent.usersystemjdk17.modules.user.service.UserEntityService;
 import cn.percent.usersystemjdk17.security.service.TokenService;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Value;
