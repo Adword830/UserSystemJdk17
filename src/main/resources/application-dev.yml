@@ -43,7 +43,7 @@ spring:
     # 数据源类型
     type: com.alibaba.druid.pool.DruidDataSource
     # MySQL 数据库的驱动类名
-    driverClassName: com.mysql.cj.jdbc.Driver
+    driverClassName: com.p6spy.engine.spy.P6SpyDriver
   # 邮件配置
   mail:
     # SMTP 主机
