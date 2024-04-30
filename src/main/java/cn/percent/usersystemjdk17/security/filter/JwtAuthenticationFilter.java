@@ -51,11 +51,6 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
     private RedisUtils redisUtils;
 
 
-    @Override
-    public AuthenticationEntryPoint getAuthenticationEntryPoint() {
-        return authenticationEntryPoint;
-    }
-
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager, TokenService tokenService,
                                    AuthenticationEntryPoint authenticationEntryPoint, UserEntityService userEntityService,
                                    MyUserDetailsService myUserDetailsService, RedisUtils redisUtils) {
@@ -65,6 +60,11 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         this.userEntityService = userEntityService;
         this.myUserDetailsService = myUserDetailsService;
         this.redisUtils = redisUtils;
+    }
+
+    @Override
+    public AuthenticationEntryPoint getAuthenticationEntryPoint() {
+        return authenticationEntryPoint;
     }
 
     /**
@@ -100,11 +100,11 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
                 ApiResultUtils.write(response, JSON.toJSONString(dto));
                 return;
             }
-             String loginAcct = (String) claims.get("loginAcct");
-             MyUserDetails userDetails = myUserDetailsService.loadUserByUsername(loginAcct);
-             // 将用户信息设置给Security
-             SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(loginAcct, UserUtils.getUser(userId).getUserPswd(), userDetails.getAuthorities()));
-            }
+            String loginAcct = (String) claims.get("loginAcct");
+            MyUserDetails userDetails = myUserDetailsService.loadUserByUsername(loginAcct);
+            // 将用户信息设置给Security
+            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(loginAcct, UserUtils.getUser(userId).getUserPswd(), userDetails.getAuthorities()));
+        }
 
         // 释放给下一个过滤器
         chain.doFilter(request, response);

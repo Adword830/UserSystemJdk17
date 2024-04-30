@@ -14,7 +14,8 @@ public interface TokenService {
 
     /**
      * 生成token和刷新token
-     * @param loginDTO 用户登录信息
+     *
+     * @param loginDTO  用户登录信息
      * @param refreshed 是否生成刷新token
      * @return
      */
@@ -22,6 +23,7 @@ public interface TokenService {
 
     /**
      * 校验当前token是否合法
+     *
      * @param token
      * @return
      */

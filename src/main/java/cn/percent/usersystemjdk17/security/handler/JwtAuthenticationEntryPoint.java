@@ -15,6 +15,7 @@ import java.io.IOException;
 
 /**
  * 用来解决匿名用户(未登录)访问无权限资源时的异常
+ *
  * @author: zhangpengju
  * Date: 2021/11/18
  * Time: 16:51
@@ -24,7 +25,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        ResponseDTO dto = new ResponseDTO(ApiCodeUtils.NOT_LOGGED_IN.getCode(),ApiCodeUtils.NOT_LOGGED_IN.getMsg());
+        ResponseDTO dto = new ResponseDTO(ApiCodeUtils.NOT_LOGGED_IN.getCode(), ApiCodeUtils.NOT_LOGGED_IN.getMsg());
         ApiResultUtils.write(response, JSONObject.toJSONString(dto));
     }
 }

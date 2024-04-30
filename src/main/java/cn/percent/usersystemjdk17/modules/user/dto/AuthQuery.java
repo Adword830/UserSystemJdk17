@@ -31,10 +31,10 @@ public class AuthQuery implements Serializable {
     @ApiModelProperty("权限id")
     private Long[] authId;
 
-    @ApiModelProperty(value = "每一页的显示条数",required = true,example = "1")
+    @ApiModelProperty(value = "每一页的显示条数", required = true, example = "1")
     private Long pageSize;
 
-    @ApiModelProperty(value = "每一页的数量",required = true,example = "10")
+    @ApiModelProperty(value = "每一页的数量", required = true, example = "10")
     private Long pageNum;
 
 }

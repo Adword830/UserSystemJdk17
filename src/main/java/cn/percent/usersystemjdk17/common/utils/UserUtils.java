@@ -21,31 +21,8 @@ import java.util.stream.Collectors;
 public class UserUtils {
 
 
-    private static UserEntityService userEntityService;
-
     public static ThreadLocal<UserEntity> threadLocal = new ThreadLocal<>();
-
-    @Autowired
-    public void userEntityService(UserEntityService userEntityService) {
-        UserUtils.userEntityService = userEntityService;
-    }
-
-
-    /**
-     * 判断其实否具有某一个管理员的权限
-     *
-     * @param authentication
-     * @return
-     */
-    public boolean checkRoleAdmin(Authentication authentication) {
-        int size = authentication.getAuthorities().stream()
-                .filter(authority -> authority.getAuthority().endsWith("Admin"))
-                .collect(Collectors.toList()).size();
-        if (size > 0) {
-            return true;
-        }
-        return false;
-    }
+    private static UserEntityService userEntityService;
 
     /**
      * 根据用户id来获取指定的用户信息
@@ -107,5 +84,26 @@ public class UserUtils {
             loginAcct = loginAcct.replace(loginAcct.substring(1, ConstantUtil.THREE), str);
         }
 
+    }
+
+    @Autowired
+    public void userEntityService(UserEntityService userEntityService) {
+        UserUtils.userEntityService = userEntityService;
+    }
+
+    /**
+     * 判断其实否具有某一个管理员的权限
+     *
+     * @param authentication
+     * @return
+     */
+    public boolean checkRoleAdmin(Authentication authentication) {
+        int size = authentication.getAuthorities().stream()
+                .filter(authority -> authority.getAuthority().endsWith("Admin"))
+                .collect(Collectors.toList()).size();
+        if (size > 0) {
+            return true;
+        }
+        return false;
     }
 }

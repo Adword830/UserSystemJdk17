@@ -5,7 +5,6 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.percent.usersystemjdk17.modules.wechat.constant.Constant;
 import cn.percent.usersystemjdk17.modules.wechat.entity.*;
@@ -38,37 +37,27 @@ import java.util.*;
 @Service
 public class SendMessageImpl implements SendMessage {
 
+    private final WxMpService wxMpService;
     @Value("${wechat.send.templateId}")
     private String templateId;
-
     @Value("${wechat.send.toUser}")
     private String toUser;
-
     @Value("${hf.weather.url}")
     private String weatherUrl;
-
     @Value("${wechat.create.menu}")
     private String menu;
-
     @Value("${wechat.upload.file}")
     private String upload;
-
     @Value("${wechat.get.mediaList}")
     private String mediaList;
-
     @Value("${wechat.imge}")
     private String imge;
-
     @Value("${wechat.video}")
     private String video;
-
     @Value("${wechat.access.token}")
     private String token;
-
     @Value("${holiday.url}")
     private String holiday;
-
-    private final WxMpService wxMpService;
 
     public SendMessageImpl(WxMpService wxMpService) {
         this.wxMpService = wxMpService;
@@ -84,6 +73,7 @@ public class SendMessageImpl implements SendMessage {
         wxMpTemplateMessage.setTemplateId(templateId);
         // 设置发送给哪个用户
         wxMpTemplateMessage.setToUser(toUser);
+
         // 天气类
         String weather = this.getWeather();
         WeatherEntity weatherEntity;
@@ -96,9 +86,10 @@ public class SendMessageImpl implements SendMessage {
         // 休息日
         Map<String, String> restDay = this.getRestDay(date, holiday);
         String format = simpleDateFormat.format(date);
-
+        // 是否节假日
         if (holiday.get(format) == null) {
-            if (CollUtil.isNotEmpty(restDay)) {
+            // 不是节假日并且不是休息日
+            if (CollUtil.isEmpty(restDay)) {
                 weatherEntity = this.createWorkTemplate(date, flag, listData, weather);
             } else {
                 weatherEntity = this.createRestDayTemplate(date, flag, listData, restDay, format, weather);
@@ -106,7 +97,7 @@ public class SendMessageImpl implements SendMessage {
         } else {
             weatherEntity = this.createHolidayTemplate(date, flag, listData, holiday, format, weather);
         }
-        if (Objects.nonNull(weatherEntity)){
+        if (Objects.nonNull(weatherEntity)) {
             // 设置跳转url
             wxMpTemplateMessage.setUrl(weatherEntity.getFxLink());
         }
@@ -148,7 +139,7 @@ public class SendMessageImpl implements SendMessage {
         String format = simpleDateFormat.format(date);
 
         if (holiday.get(format) == null) {
-            if (CollUtil.isNotEmpty(restDay)) {
+            if (CollUtil.isEmpty(restDay)) {
                 weatherEntity = this.createWorkTemplate(date, flag, listData, weather);
             } else {
                 weatherEntity = this.createRestDayTemplate(date, flag, listData, restDay, format, weather);
@@ -157,7 +148,7 @@ public class SendMessageImpl implements SendMessage {
             weatherEntity = this.createHolidayTemplate(date, flag, listData, holiday, format, weather);
         }
 
-        if (Objects.nonNull(weatherEntity)){
+        if (Objects.nonNull(weatherEntity)) {
             // 设置跳转url
             wxMpTemplateMessage.setUrl(weatherEntity.getFxLink());
         }
@@ -260,7 +251,7 @@ public class SendMessageImpl implements SendMessage {
                     .form("description", description)
                     .form("media", file).execute().body();
         } catch (WxErrorException | IOException e) {
-                log.error(ExceptionUtil.getMessage(e));
+            log.error(ExceptionUtil.getMessage(e));
         } finally {
             FileUtil.del(file);
         }

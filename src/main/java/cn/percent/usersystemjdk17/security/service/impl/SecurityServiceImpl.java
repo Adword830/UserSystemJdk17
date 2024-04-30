@@ -23,7 +23,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public Boolean checkUser(Authentication authentication, Long id) {
         UserEntity userEntity = userEntityService.getById(id);
-        if(userEntity.getLoginAcct().equals(authentication.getPrincipal())){
+        if (userEntity.getLoginAcct().equals(authentication.getPrincipal())) {
             return true;
         }
         return false;

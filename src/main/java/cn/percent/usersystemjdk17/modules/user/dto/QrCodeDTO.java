@@ -30,7 +30,7 @@ public class QrCodeDTO implements Serializable {
     @ApiModelProperty("二维码状态")
     private QrCodeStatusEnum status;
 
-    public QrCodeDTO(String qrCode,QrCodeStatusEnum status){
+    public QrCodeDTO(String qrCode, QrCodeStatusEnum status) {
         this.qrCode = qrCode;
         this.status = status;
     }

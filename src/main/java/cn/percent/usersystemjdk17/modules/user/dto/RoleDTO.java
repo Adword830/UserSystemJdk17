@@ -12,28 +12,24 @@ import java.util.List;
 @Data
 public class RoleDTO implements Serializable {
     /**
+     * 子集
+     */
+    List<RoleDTO> children;
+    /**
      * 主键
      */
     private Long id;
-
     /**
      * 父id
      */
     private Long parentId;
-
     /**
      * 角色名对应角色名称
      */
     private String value;
-
     /**
      * 角色描述
      */
     private String label;
-
-    /**
-     * 子集
-     */
-    List<RoleDTO> children;
 
 }

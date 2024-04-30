@@ -29,16 +29,14 @@ import java.util.Map;
 @Slf4j
 public class JwtSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
 
-    private AuthEntityService authEntityService;
-
-    private AntUrlPathMatcher antUrlPathMatcher;
-
     /**
      * <资源，权限列表>存储所有资源与权限
      */
     private static Map<String, Collection<ConfigAttribute>> resourceMap;
+    private AuthEntityService authEntityService;
+    private AntUrlPathMatcher antUrlPathMatcher;
 
-    public JwtSecurityMetadataSource(AuthEntityService authEntityService,AntUrlPathMatcher antUrlPathMatcher) {
+    public JwtSecurityMetadataSource(AuthEntityService authEntityService, AntUrlPathMatcher antUrlPathMatcher) {
         this.authEntityService = authEntityService;
         this.antUrlPathMatcher = antUrlPathMatcher;
     }
@@ -52,6 +50,7 @@ public class JwtSecurityMetadataSource implements FilterInvocationSecurityMetada
 
     /**
      * 获取到对应的权限和资源
+     *
      * @param object
      * @return 返回访问当前url的权限
      * @throws IllegalArgumentException

@@ -66,33 +66,23 @@ import java.util.stream.Collectors;
 public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEntity>
         implements UserEntityService {
 
+    private final UserRoleDeptEntityService userRoleDeptEntityService;
+    private final QrCodeService qrCodeService;
+    private final RedisUtils redisUtils;
+    private final WebSocketServer webSocketServer;
+    private final RoleEntityService roleEntityService;
     @Value("${spring.mail.username}")
     private String from;
-
     @Value("${spring.mail.subject}")
     private String subject;
-
     @Value("${ras.private.key}")
     private String privateKey;
-
     @Value("${login.url}")
     private String url;
-
     @Resource
     private JavaMailSender mailSender;
-
-    private final UserRoleDeptEntityService userRoleDeptEntityService;
-
-    private final QrCodeService qrCodeService;
-
-    private final RedisUtils redisUtils;
-
-    private final WebSocketServer webSocketServer;
-
     @Resource
     private JavaMailSender javaMailSender;
-
-    private final RoleEntityService roleEntityService;
 
     public UserEntityServiceImpl(UserRoleDeptEntityService userRoleDeptEntityService, QrCodeService qrCodeService, RedisUtils redisUtils, WebSocketServer webSocketServer, RoleEntityService roleEntityService) {
         this.userRoleDeptEntityService = userRoleDeptEntityService;
@@ -102,6 +92,47 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
         this.roleEntityService = roleEntityService;
     }
 
+    /**
+     * 读取邮件模板
+     * 替换模板中的信息
+     *
+     * @param title 内容
+     * @return
+     */
+    public static String buildContent(String title) {
+        //加载邮件html模板
+        ClassPathResource resource = new ClassPathResource("/template/mailtemplate.ftl");
+        InputStream inputStream = null;
+        BufferedReader fileReader = null;
+        StringBuilder buffer = new StringBuilder();
+        String line = "";
+        try {
+            inputStream = resource.getStream();
+            fileReader = new BufferedReader(new InputStreamReader(inputStream));
+            while ((line = fileReader.readLine()) != null) {
+                buffer.append(line);
+            }
+        } catch (Exception e) {
+            log.info("发送邮件读取模板失败{}", e);
+        } finally {
+            if (fileReader != null) {
+                try {
+                    fileReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        //替换html模板中的参数
+        return MessageFormat.format(buffer.toString(), title);
+    }
 
     @Override
     public Page<UserEntity> pageList(UserQuery userQuery) {
@@ -115,7 +146,6 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
         // 调用分页查询方法进行分页查询，第一个参数代表page对象，第二个参数代表查询条件
         return page(page, queryWrapper.select("id", "user_name", "email", "login_acct", "first_login_time", "last_login_time", "disable"));
     }
-
 
     @Transactional(rollbackFor = {})
     @Override
@@ -369,48 +399,6 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
     @Override
     public List<RoleEntity> selectRoleByUserId(Long userId) {
         return this.baseMapper.selectRoleByUserId(userId);
-    }
-
-    /**
-     * 读取邮件模板
-     * 替换模板中的信息
-     *
-     * @param title 内容
-     * @return
-     */
-    public static String buildContent(String title) {
-        //加载邮件html模板
-        ClassPathResource resource = new ClassPathResource("/template/mailtemplate.ftl");
-        InputStream inputStream = null;
-        BufferedReader fileReader = null;
-        StringBuilder buffer = new StringBuilder();
-        String line = "";
-        try {
-            inputStream = resource.getStream();
-            fileReader = new BufferedReader(new InputStreamReader(inputStream));
-            while ((line = fileReader.readLine()) != null) {
-                buffer.append(line);
-            }
-        } catch (Exception e) {
-            log.info("发送邮件读取模板失败{}", e);
-        } finally {
-            if (fileReader != null) {
-                try {
-                    fileReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        //替换html模板中的参数
-        return MessageFormat.format(buffer.toString(), title);
     }
 }
 

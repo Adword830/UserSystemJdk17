@@ -28,13 +28,14 @@ public class AuthApiController {
 
     /**
      * 根据对应的权限获取其管理的角色
+     *
      * @param authQuery
      * @return
      */
     @ApiOperation(value = "获取当前系统的权限", notes = "获取当前系统的权限", response = ApiResultUtils.class)
     @GetMapping("/info")
-    public ApiResultUtils<Page<AuthEntity>> listAuthInfo(AuthQuery authQuery){
-        Page<AuthEntity> authEntityPage=authEntityService.pageList(authQuery);
+    public ApiResultUtils<Page<AuthEntity>> listAuthInfo(AuthQuery authQuery) {
+        Page<AuthEntity> authEntityPage = authEntityService.pageList(authQuery);
         return ApiResultUtils.ok(authEntityPage);
     }
 

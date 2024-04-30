@@ -46,10 +46,11 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     /**
      * JwtLoginFilter 的构造函数。
-     * @param redisUtils 用于 Redis 操作的实用程序类
-     * @param tokenService 用于令牌操作的服务类
+     *
+     * @param redisUtils        用于 Redis 操作的实用程序类
+     * @param tokenService      用于令牌操作的服务类
      * @param userEntityService 用于用户实体操作的服务类
-     * @param imgCodeService 用于图像代码操作的服务类
+     * @param imgCodeService    用于图像代码操作的服务类
      */
     public JwtLoginFilter(RedisUtils redisUtils, TokenService tokenService,
                           UserEntityService userEntityService, ImgCodeService imgCodeService) {
@@ -61,7 +62,8 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     /**
      * 尝试对用户进行身份验证。
-     * @param request HttpServletRequest
+     *
+     * @param request  HttpServletRequest
      * @param response HttpServletResponse
      * @return 如果成功，则返回 Authentication 对象，否则返回 null
      * @throws AuthenticationException 如果身份验证失败
@@ -71,7 +73,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         try {
             body = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            log.error("获取请求体失败:{}" , e.getMessage());
+            log.error("获取请求体失败:{}", e.getMessage());
         }
 
         LoginDTO loginDTO = JSON.parseObject(body, LoginDTO.class);
@@ -100,9 +102,10 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     /**
      * 处理成功的身份验证。
-     * @param request HttpServletRequest
-     * @param response HttpServletResponse
-     * @param chain FilterChain
+     *
+     * @param request    HttpServletRequest
+     * @param response   HttpServletResponse
+     * @param chain      FilterChain
      * @param authResult Authentication 对象
      */
     @Override
@@ -116,7 +119,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
                     .set("first_login_time", LocalDateTime.now()).set("last_login_time", LocalDateTime.now()));
         }
         TokenDTO token = tokenService.getToken(loginDTO, Boolean.TRUE);
-        redisUtils.set("token:"+userEntity.getId().toString(), JSON.toJSONString(token), 60L, TimeUnit.MINUTES);
+        redisUtils.set("token:" + userEntity.getId().toString(), JSON.toJSONString(token), 60L, TimeUnit.MINUTES);
         ApiResultUtils.write(response, JSON.toJSONString(new ResponseDTO<>(ApiCodeUtils.SUCCESS.getCode(), "登录成功", token)));
     }
 

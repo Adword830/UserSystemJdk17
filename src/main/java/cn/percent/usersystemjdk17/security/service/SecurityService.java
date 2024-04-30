@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 public interface SecurityService {
     /**
      * checkUser校验当前用户是否为本人登录
+     *
      * @param authentication
      * @param id
      * @return
@@ -19,6 +20,7 @@ public interface SecurityService {
 
     /**
      * 判断当前系统是否存在当前用户
+     *
      * @param id
      * @return
      */

@@ -65,6 +65,7 @@ public class SecurityConfig {
 
     /**
      * 安全过滤器链
+     *
      * @param http HttpSecurity
      * @return SecurityFilterChain
      */
@@ -83,7 +84,7 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/login",
                                 "/system/user/register",
-                                "/v2/api-docs","/doc.html").permitAll()
+                                "/v2/api-docs", "/doc.html").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authenticationProvider(authenticationProvider())
@@ -106,6 +107,7 @@ public class SecurityConfig {
 
     /**
      * 认证的提供者
+     *
      * @return 认证的提供者
      */
     @Bean
@@ -118,11 +120,12 @@ public class SecurityConfig {
 
     /**
      * 登录的过滤器
+     *
      * @return 登录的过滤器
      */
     @Bean
     JwtLoginFilter jwtLoginFilter() throws Exception {
-        JwtLoginFilter filter = new JwtLoginFilter(redisUtils, tokenService, userEntityService,imgCodeService);
+        JwtLoginFilter filter = new JwtLoginFilter(redisUtils, tokenService, userEntityService, imgCodeService);
         filter.setAuthenticationManager(authenticationProvider.getAuthenticationManager());
         return filter;
     }

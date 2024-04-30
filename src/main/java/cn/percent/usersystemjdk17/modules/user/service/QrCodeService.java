@@ -38,6 +38,7 @@ public interface QrCodeService {
 
     /**
      * 生成二维码，使用默认尺寸
+     *
      * @param content
      * @return
      */
@@ -51,7 +52,7 @@ public interface QrCodeService {
      * @param logoUrl
      * @return
      */
-    String getBase64QRCode(String content,String logoUrl);
+    String getBase64QRCode(String content, String logoUrl);
 
     /**
      * 生成二维码

@@ -34,11 +34,9 @@ public class TokenController {
     private final TokenService tokenService;
 
     private final RedisUtils redisUtils;
-
+    private final UserEntityService userEntityService;
     @Value("${jwt.refresh.token.expiration}")
     private Long refreshTokenExpiration;
-    
-    private final UserEntityService userEntityService;
 
     public TokenController(TokenService tokenService, RedisUtils redisUtils, UserEntityService userEntityService) {
         this.tokenService = tokenService;
@@ -57,8 +55,8 @@ public class TokenController {
         String loginAcct = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String tokenString = "";
         if (userDTO.getLoginAcct().equals(loginAcct)) {
-            QueryWrapper<UserEntity> queryWrapper=new QueryWrapper<>();
-            queryWrapper.lambda().eq(UserEntity::getLoginAcct,loginAcct);
+            QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(UserEntity::getLoginAcct, loginAcct);
             UserEntity userEntity = userEntityService.getBaseMapper().selectOne(queryWrapper);
             tokenString = redisUtils.get(String.valueOf(userEntity.getId())).toString();
             String accessToken = JSONObject.parseObject(tokenString).getString(Constant.ACCESS_TOKEN);

@@ -38,8 +38,9 @@ public class MyUserDetails extends User {
 
     /**
      * 构造方法
-     * @param username 用户名
-     * @param password 密码
+     *
+     * @param username    用户名
+     * @param password    密码
      * @param authorities 权限信息
      */
     public MyUserDetails(String username, String password, Collection<? extends GrantedAuthority> authorities) {
@@ -48,17 +49,18 @@ public class MyUserDetails extends User {
 
     /**
      * 构造方法
-     * @param id 主键
-     * @param username 用户名
-     * @param password 密码
-     * @param email 邮箱
+     *
+     * @param id          主键
+     * @param username    用户名
+     * @param password    密码
+     * @param email       邮箱
      * @param authorities 权限信息
      */
-    public MyUserDetails(Long id,String username, String password,String nickName,String email, Collection<? extends GrantedAuthority> authorities) {
+    public MyUserDetails(Long id, String username, String password, String nickName, String email, Collection<? extends GrantedAuthority> authorities) {
         super(username, password, authorities);
         this.id = id;
-        this.email=email;
-        this.nickName=nickName;
+        this.email = email;
+        this.nickName = nickName;
     }
 
 

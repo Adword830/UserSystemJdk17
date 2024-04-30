@@ -21,26 +21,26 @@ import lombok.NoArgsConstructor;
 @Api("登录相关的参数")
 public class LoginDTO {
 
-   @ApiModelProperty("主键id")
-   private Long id;
+    @ApiModelProperty("主键id")
+    private Long id;
 
-   @ApiModelProperty("登录名")
-   private String username;
+    @ApiModelProperty("登录名")
+    private String username;
 
-   @ApiModelProperty("登录密码")
-   private String password;
+    @ApiModelProperty("登录密码")
+    private String password;
 
-   @ApiModelProperty("邮箱")
-   private String email;
+    @ApiModelProperty("邮箱")
+    private String email;
 
-   @ApiModelProperty("记住密码")
-   private Boolean rememberMe;
+    @ApiModelProperty("记住密码")
+    private Boolean rememberMe;
 
-   @ApiModelProperty("用户输入的图片验证码")
-   private String inputImgCode;
+    @ApiModelProperty("用户输入的图片验证码")
+    private String inputImgCode;
 
-   public LoginDTO(Long id,String username){
-      this.id = id;
-      this.username = username;
-   }
+    public LoginDTO(Long id, String username) {
+        this.id = id;
+        this.username = username;
+    }
 }

@@ -19,13 +19,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
-* @author zpj
-* @description 针对表【t_role】的数据库操作Service实现
-* @createDate 2021-11-22 10:44:15
-*/
+ * @author zpj
+ * @description 针对表【t_role】的数据库操作Service实现
+ * @createDate 2021-11-22 10:44:15
+ */
 @Service
 public class RoleEntityServiceImpl extends ServiceImpl<RoleEntityMapper, RoleEntity>
-    implements RoleEntityService {
+        implements RoleEntityService {
 
     @Autowired
     private RoleEntityMapper roleEntityMapper;
@@ -38,48 +38,48 @@ public class RoleEntityServiceImpl extends ServiceImpl<RoleEntityMapper, RoleEnt
     @Override
     public Page<RoleEntity> pageList(RoleQuery roleQuery) {
         Page<RoleEntity> page = new Page<>(roleQuery.getPageNum(), roleQuery.getPageSize());
-        QueryWrapper<RoleEntity> queryWrapper=new QueryWrapper<>();
+        QueryWrapper<RoleEntity> queryWrapper = new QueryWrapper<>();
         if (StrUtil.isNotEmpty(roleQuery.getName())) {
-            queryWrapper.eq("name",roleQuery.getName());
+            queryWrapper.eq("name", roleQuery.getName());
         }
         List<RoleEntity> roleList = roleEntityMapper.queryByUserIdList(Long.parseLong(roleQuery.getUserId()));
         List<Long> idList = roleList.stream()
-                .filter(role -> role.getParentId()==null)
+                .filter(role -> role.getParentId() == null)
                 .map(RoleEntity::getId).collect(Collectors.toList());
         // 查询出对应的角色下管理的角色
         if (idList.size() > 0) {
-            queryWrapper.in("parent_id",idList);
+            queryWrapper.in("parent_id", idList);
         }
-        Page<RoleEntity> roleEntityPage = page(page,queryWrapper);
+        Page<RoleEntity> roleEntityPage = page(page, queryWrapper);
         return roleEntityPage;
     }
 
     @Transactional(rollbackFor = {Exception.class})
     @Override
     public void allotAuth(RoleQuery roleQuery) {
-        if (roleQuery.getAuthIds()==null || roleQuery.getAuthIds().length==0) {
+        if (roleQuery.getAuthIds() == null || roleQuery.getAuthIds().length == 0) {
             return;
         }
-        this.baseMapper.allotAuth(roleQuery.getId(),roleQuery.getAuthIds());
+        this.baseMapper.allotAuth(roleQuery.getId(), roleQuery.getAuthIds());
     }
 
     @Transactional(rollbackFor = {Exception.class})
     @Override
     public void updateRole(RoleQuery roleQuery) {
-        RoleEntity role=new RoleEntity();
+        RoleEntity role = new RoleEntity();
         BeanUtils.copyProperties(roleQuery, role);
         // 修改基础信息
         updateById(role);
         // 修改当前角色的权限信息
-        this.baseMapper.allotAuth(roleQuery.getId(),roleQuery.getAuthIds());
+        this.baseMapper.allotAuth(roleQuery.getId(), roleQuery.getAuthIds());
     }
 
     @Override
     public List<RoleDTO> roleTree() {
         List<RoleEntity> entityList = this.baseMapper.selectList(new QueryWrapper<>());
-        List<RoleDTO> roleDTOList=new ArrayList<>(10);
-        entityList.forEach(item->{
-            RoleDTO roleDTO=new RoleDTO();
+        List<RoleDTO> roleDTOList = new ArrayList<>(10);
+        entityList.forEach(item -> {
+            RoleDTO roleDTO = new RoleDTO();
             roleDTO.setId(item.getId());
             roleDTO.setValue(item.getName());
             roleDTO.setLabel(item.getNameDesc());

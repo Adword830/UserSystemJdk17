@@ -30,47 +30,6 @@ public class ImgCodeServiceImpl implements ImgCodeService {
     @Autowired
     private RedisUtils redisUtils;
 
-    @Override
-    public String generate(Integer width, Integer height, OutputStream os) throws IOException {
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics graphics = image.getGraphics();
-        fillBackground(graphics, width, height);
-        String randomStr = RandomUtils.randomString(IMG_CODE_LENGTH);
-        createCharacter(graphics, randomStr);
-        graphics.dispose();
-        //设置JPEG格式
-        ImageIO.write(image, "JPEG", os);
-        return randomStr;
-    }
-
-    @Override
-    public ImgCodeDTO generate(Integer width, Integer height, String loginAcct) {
-
-        ImgCodeDTO imgCodeDTO = null;
-        ByteArrayOutputStream baos=null;
-        try {
-            baos = new ByteArrayOutputStream();
-            String code = generate(width, height, baos);
-            imgCodeDTO = new ImgCodeDTO();
-            imgCodeDTO.setCode(code);
-            byte[] bytes = baos.toByteArray();
-            imgCodeDTO.setImgBytes(bytes);
-            // 验证码储存进redis
-            redisUtils.set(loginAcct,code,1L, TimeUnit.MINUTES);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            imgCodeDTO = null;
-        }finally {
-            try {
-                baos.flush();
-                baos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return imgCodeDTO;
-    }
-
     /**
      * 设置背景颜色及大小，干扰线
      *
@@ -95,6 +54,47 @@ public class ImgCodeServiceImpl implements ImgCodeService {
             int y1 = random.nextInt(height);
             graphics.drawLine(x, y, x1, y1);
         }
+    }
+
+    @Override
+    public String generate(Integer width, Integer height, OutputStream os) throws IOException {
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics graphics = image.getGraphics();
+        fillBackground(graphics, width, height);
+        String randomStr = RandomUtils.randomString(IMG_CODE_LENGTH);
+        createCharacter(graphics, randomStr);
+        graphics.dispose();
+        //设置JPEG格式
+        ImageIO.write(image, "JPEG", os);
+        return randomStr;
+    }
+
+    @Override
+    public ImgCodeDTO generate(Integer width, Integer height, String loginAcct) {
+
+        ImgCodeDTO imgCodeDTO = null;
+        ByteArrayOutputStream baos = null;
+        try {
+            baos = new ByteArrayOutputStream();
+            String code = generate(width, height, baos);
+            imgCodeDTO = new ImgCodeDTO();
+            imgCodeDTO.setCode(code);
+            byte[] bytes = baos.toByteArray();
+            imgCodeDTO.setImgBytes(bytes);
+            // 验证码储存进redis
+            redisUtils.set(loginAcct, code, 1L, TimeUnit.MINUTES);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            imgCodeDTO = null;
+        } finally {
+            try {
+                baos.flush();
+                baos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return imgCodeDTO;
     }
 
     /**

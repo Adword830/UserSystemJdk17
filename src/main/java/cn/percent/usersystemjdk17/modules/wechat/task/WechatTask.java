@@ -30,7 +30,7 @@ public class WechatTask {
      * 它发送一个ID为1的消息。
      */
     @Scheduled(cron = "0 30 7 * * ?")
-    public void task(){
+    public void task() {
         sendMessage.send(1);
     }
 
@@ -39,7 +39,7 @@ public class WechatTask {
      * 它发送一个ID为2的消息。
      */
     @Scheduled(cron = "0 30 11 * * ?")
-    public void task2(){
+    public void task2() {
         sendMessage.send(2);
     }
 
@@ -48,7 +48,7 @@ public class WechatTask {
      * 它发送一个ID为3的消息。
      */
     @Scheduled(cron = "0 30 17 * * ?")
-    public void task3(){
+    public void task3() {
         sendMessage.send(3);
     }
 }

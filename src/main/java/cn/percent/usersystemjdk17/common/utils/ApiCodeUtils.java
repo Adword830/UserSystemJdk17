@@ -188,16 +188,15 @@ public enum ApiCodeUtils {
     FOCUS_USER_NOT_EXIST(9804, "会员已被删除，不能编辑"),
 
 
-
-    NOT_LOGGED_IN(4000,"您当前未登录请登录后再试"),
-    NOT_LOGGED_ABNORMAL(4001,"登录状态异常请重新登录"),
-    LOGON__FAILURE(4002,"登录失效请重新登录"),
-    NUMBER_OF_LOGIN_ERROR(4003,"失败次数超过限制"),
-    LOGIN_IMG_CODE_NOT_NULL(4004,"验证码不能为空"),
-    LOGIN_IMG_CODE_FAIL(4005,"验证码错误"),
-    LOGIN_USERNAME_OR_PASSWORD(4006,"用户名或者密码不能为空"),
-    LOGIN_USERNAME_NULL(4007,"当前用户暂未注册"),
-    USER_DISABLE(4008,"当前用户被禁用"),
+    NOT_LOGGED_IN(4000, "您当前未登录请登录后再试"),
+    NOT_LOGGED_ABNORMAL(4001, "登录状态异常请重新登录"),
+    LOGON__FAILURE(4002, "登录失效请重新登录"),
+    NUMBER_OF_LOGIN_ERROR(4003, "失败次数超过限制"),
+    LOGIN_IMG_CODE_NOT_NULL(4004, "验证码不能为空"),
+    LOGIN_IMG_CODE_FAIL(4005, "验证码错误"),
+    LOGIN_USERNAME_OR_PASSWORD(4006, "用户名或者密码不能为空"),
+    LOGIN_USERNAME_NULL(4007, "当前用户暂未注册"),
+    USER_DISABLE(4008, "当前用户被禁用"),
     /**
      * 二维码
      */
@@ -211,7 +210,7 @@ public enum ApiCodeUtils {
         this.msg = msg;
     }
 
-    public  ApiCodeUtils getApiCode(int code) {
+    public ApiCodeUtils getApiCode(int code) {
         ApiCodeUtils[] ecs = ApiCodeUtils.values();
         for (ApiCodeUtils ec : ecs) {
             if (ec.getCode() == code) {

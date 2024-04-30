@@ -10,15 +10,16 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
-* @author zpj
-* @description 针对表【t_auth】的数据库操作Mapper
-* @createDate 2021-11-22 10:44:15
-* @Entity cn.percent.system.entity.AuthEntity
-*/
+ * @author zpj
+ * @description 针对表【t_auth】的数据库操作Mapper
+ * @createDate 2021-11-22 10:44:15
+ * @Entity cn.percent.system.entity.AuthEntity
+ */
 @Mapper
 public interface AuthEntityMapper extends BaseMapper<AuthEntity> {
     /**
      * 根据指定的集合来获取对应的权限列表
+     *
      * @param roleEntityList
      * @return
      */

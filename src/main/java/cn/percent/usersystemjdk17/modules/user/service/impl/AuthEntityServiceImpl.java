@@ -15,13 +15,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
-* @author zpj
-* @description 针对表【t_auth】的数据库操作Service实现
-* @createDate 2021-11-22 10:44:15
-*/
+ * @author zpj
+ * @description 针对表【t_auth】的数据库操作Service实现
+ * @createDate 2021-11-22 10:44:15
+ */
 @Service
 public class AuthEntityServiceImpl extends ServiceImpl<AuthEntityMapper, AuthEntity>
-    implements AuthEntityService {
+        implements AuthEntityService {
 
     @Autowired
     private AuthEntityMapper authEntityMapper;
@@ -34,11 +34,11 @@ public class AuthEntityServiceImpl extends ServiceImpl<AuthEntityMapper, AuthEnt
     @Override
     public Page<AuthEntity> pageList(AuthQuery authQuery) {
         Page<AuthEntity> page = new Page<>(authQuery.getPageNum(), authQuery.getPageSize());
-        QueryWrapper<AuthEntity> queryWrapper=new QueryWrapper<>();
+        QueryWrapper<AuthEntity> queryWrapper = new QueryWrapper<>();
         if (StrUtil.isNotEmpty(authQuery.getName())) {
-            queryWrapper.eq("name",authQuery.getName());
+            queryWrapper.eq("name", authQuery.getName());
         }
-        Page<AuthEntity> roleEntityPage = page(page,queryWrapper);
+        Page<AuthEntity> roleEntityPage = page(page, queryWrapper);
 
         return roleEntityPage;
     }

@@ -59,6 +59,7 @@ public class BaseExceptionHandler {
 
     /**
      * 捕获@PreAuthorize注解无权访问的信息
+     *
      * @param e
      * @return
      */
@@ -70,6 +71,7 @@ public class BaseExceptionHandler {
 
     /**
      * 登录失败抛出异常
+     *
      * @param e
      * @return
      */

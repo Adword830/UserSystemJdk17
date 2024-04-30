@@ -47,20 +47,19 @@ public class WebSocketServer {
      * @param session
      */
     @OnOpen
-    public void onOpen(@PathParam("userId") String userId, Session session)
-    {
+    public void onOpen(@PathParam("userId") String userId, Session session) {
         onlineNumber++;
-        log.info("现在来连接的客户id："+session.getId()+"用户名："+userId);
+        log.info("现在来连接的客户id：" + session.getId() + "用户名：" + userId);
         this.userId = userId;
         this.session = session;
-        clients.put(userId,session);
+        clients.put(userId, session);
         log.info("有新连接加入！ 当前在线人数" + onlineNumber);
 
     }
 
     @OnError
     public void onError(Session session, Throwable error) {
-        log.info("服务端发生了错误"+error.getMessage());
+        log.info("服务端发生了错误" + error.getMessage());
     }
 
     /**
@@ -79,12 +78,11 @@ public class WebSocketServer {
      * @param message 消息
      */
     @OnMessage
-    public void onMessage(String message){
+    public void onMessage(String message) {
         log.info("来自客户端消息：" + message);
     }
 
     /**
-     *
      * @param message
      * @param toUserId
      * @throws IOException
@@ -92,23 +90,22 @@ public class WebSocketServer {
     public void sendMessageTo(String message, String toUserId) {
 
         for (Map.Entry<String, Session> sessionEntry : clients.entrySet()) {
-            if(sessionEntry.getKey().equals(toUserId)){
+            if (sessionEntry.getKey().equals(toUserId)) {
                 sessionEntry.getValue().getAsyncRemote().sendText(message);
             }
         }
     }
 
     /**
-     *
      * @param message
      * @param fromUserId
      * @throws IOException
      */
-    public void sendMessageAll(String message,String fromUserId) throws IOException {
+    public void sendMessageAll(String message, String fromUserId) throws IOException {
         for (Map.Entry<String, Session> sessionEntry : clients.entrySet()) {
             sessionEntry.getValue().getAsyncRemote().sendText(message);
         }
     }
 
-    
+
 }

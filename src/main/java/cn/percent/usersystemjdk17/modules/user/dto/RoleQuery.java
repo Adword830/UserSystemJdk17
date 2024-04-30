@@ -22,7 +22,7 @@ public class RoleQuery implements Serializable {
     @ApiModelProperty("父id")
     private Long parentId;
 
-    @ApiModelProperty(value = "用户id在查询当前登录的用户管理的用户",required = true)
+    @ApiModelProperty(value = "用户id在查询当前登录的用户管理的用户", required = true)
     private String userId;
 
     @ApiModelProperty("角色名称，新增或者修改角色时使用")
@@ -34,10 +34,10 @@ public class RoleQuery implements Serializable {
     @ApiModelProperty("相关的权限id,新增或者修改角色时使用")
     private Long[] authIds;
 
-    @ApiModelProperty(value = "每一页的显示条数,查询角色时使用",required = true,example = "1")
+    @ApiModelProperty(value = "每一页的显示条数,查询角色时使用", required = true, example = "1")
     private Long pageSize;
 
-    @ApiModelProperty(value = "每一页的数量,查询角色时使用",required = true,example = "10")
+    @ApiModelProperty(value = "每一页的数量,查询角色时使用", required = true, example = "10")
     private Long pageNum;
 
 }

@@ -6,7 +6,6 @@ import cn.percent.usersystemjdk17.modules.wechat.entity.OutMsgEntity;
 import cn.percent.usersystemjdk17.modules.wechat.service.SendMessage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -80,7 +79,7 @@ public class WeChatController {
     public String getMediaList(@RequestParam("count") String count,
                                @RequestParam(value = "offset") String offset,
                                @RequestParam("type") String type) {
-        return sendMessage.getMediaList(count,offset,type);
+        return sendMessage.getMediaList(count, offset, type);
     }
 
     /**
@@ -104,9 +103,10 @@ public class WeChatController {
      */
     @ApiOperation(value = "给指定用户发送信息", notes = "给指定用户发送信息", response = ApiResultUtils.class)
     @GetMapping(value = "/manualSendOpenApi/{flag}")
-    public String manualSend(@PathVariable("flag") Integer flag,@RequestParam("openApi")String openApi) {
-        return sendMessage.send(flag,openApi);
+    public String manualSend(@PathVariable("flag") Integer flag, @RequestParam("openApi") String openApi) {
+        return sendMessage.send(flag, openApi);
     }
+
     /**
      * 创建菜单
      *

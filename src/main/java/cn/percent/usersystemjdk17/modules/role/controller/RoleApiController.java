@@ -32,38 +32,41 @@ public class RoleApiController {
 
     /**
      * 根据对应的权限获取其管理的角色
+     *
      * @param roleQuery
      * @return
      */
     @ApiOperation(value = "获取当前登录用户管理的角色", notes = "获取当前的角色", response = ApiResultUtils.class)
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/info")
-    public ApiResultUtils<Page<RoleEntity>> listRoleInfo(RoleQuery roleQuery){
-        Page<RoleEntity> roleEntityPage=roleEntityService.pageList(roleQuery);
+    public ApiResultUtils<Page<RoleEntity>> listRoleInfo(RoleQuery roleQuery) {
+        Page<RoleEntity> roleEntityPage = roleEntityService.pageList(roleQuery);
         return ApiResultUtils.ok(roleEntityPage);
     }
 
     /**
      * 根据对应的权限获取其管理的角色
+     *
      * @return
      */
     @ApiOperation(value = "获取对应的角色树", notes = "获取对应的角色树", response = ApiResultUtils.class)
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SERVICE_ADMIN','ROLE_SUPER_ADMIN')")
     @GetMapping("/roleTree")
-    public ApiResultUtils<List<RoleDTO>> roleTree(){
-        List<RoleDTO> roleTree=roleEntityService.roleTree();
+    public ApiResultUtils<List<RoleDTO>> roleTree() {
+        List<RoleDTO> roleTree = roleEntityService.roleTree();
         return ApiResultUtils.ok(roleTree);
     }
 
     /**
      * 新增角色
+     *
      * @param roleQuery
      * @return
      */
     @ApiOperation(value = "新增角色", notes = "新增角色", response = ApiResultUtils.class)
     @PostMapping("/save")
-    public ApiResultUtils saveRole(@RequestBody RoleQuery roleQuery){
-        RoleEntity roleEntity=new RoleEntity();
+    public ApiResultUtils saveRole(@RequestBody RoleQuery roleQuery) {
+        RoleEntity roleEntity = new RoleEntity();
         BeanUtils.copyProperties(roleQuery, roleEntity);
         roleEntityService.save(roleEntity);
         return ApiResultUtils.ok(roleEntity);
@@ -71,7 +74,7 @@ public class RoleApiController {
 
     @ApiOperation(value = "修改角色", notes = "修改角色", response = ApiResultUtils.class)
     @PutMapping("/update")
-    public ApiResultUtils updateRole(@RequestBody RoleQuery roleQuery){
+    public ApiResultUtils updateRole(@RequestBody RoleQuery roleQuery) {
         roleEntityService.updateRole(roleQuery);
         return ApiResultUtils.ok(roleQuery);
     }

@@ -16,6 +16,7 @@ import java.io.IOException;
 
 /**
  * 解决用户访问资源无权限时的返回
+ *
  * @author: zhangpengju
  * Date: 2021/11/19
  * Time: 9:32
@@ -25,6 +26,7 @@ import java.io.IOException;
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     /**
      * 解决用户访问资源无权限时的返回
+     *
      * @param request
      * @param response
      * @param accessDeniedException

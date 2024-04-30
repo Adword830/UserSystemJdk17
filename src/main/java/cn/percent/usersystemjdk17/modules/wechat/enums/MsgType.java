@@ -20,11 +20,11 @@ public enum MsgType {
      * music 音乐消息
      */
 
-    TEXT("text","文本消息"),
-    VOICE("voice","语音消息"),
-    VIDEO("video","视频消息"),
-    MUSIC("music","音乐消息"),
-    IMAGE("image","图片消息");
+    TEXT("text", "文本消息"),
+    VOICE("voice", "语音消息"),
+    VIDEO("video", "视频消息"),
+    MUSIC("music", "音乐消息"),
+    IMAGE("image", "图片消息");
 
     private final String key;
     private final String value;
@@ -37,7 +37,7 @@ public enum MsgType {
     /**
      * 通过key值获取value
      *
-     * @param  key
+     * @param key
      * @return enum
      */
     public static MsgType resovle(Integer key) {

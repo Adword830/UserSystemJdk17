@@ -39,7 +39,7 @@ public class QrCodeServiceImpl implements QrCodeService {
     }
 
     @Override
-    public String getBase64QRCode(String content,String logoUrl) {
+    public String getBase64QRCode(String content, String logoUrl) {
         return getBase64Image(content, WIDTH, HEIGHT, logoUrl, LOGO_WIDTH, LOGO_HEIGHT);
     }
 

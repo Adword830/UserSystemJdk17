@@ -16,8 +16,7 @@ public class ConstantUtil {
 
     public static final Integer SIX = 6;
 
-    public static final String BEARER="Bearer ";
-
+    public static final String BEARER = "Bearer ";
 
 
 }

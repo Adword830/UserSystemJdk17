@@ -3,19 +3,18 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.percent.usersystemjdk17.modules.user.mapper.UserEntityMapper">
-
     <resultMap id="BaseResultMap" type="cn.percent.usersystemjdk17.modules.user.entity.UserEntity">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="loginAcct" column="login_acct" jdbcType="VARCHAR"/>
-            <result property="userPswd" column="user_pswd" jdbcType="CHAR"/>
-            <result property="userName" column="user_name" jdbcType="VARCHAR"/>
-            <result property="email" column="email" jdbcType="VARCHAR"/>
-            <result property="loginFailNum" column="login_fail_num" jdbcType="INTEGER"/>
-            <result property="codeNum" column="code_num" jdbcType="INTEGER"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="firstLoginTime" column="first_login_time" jdbcType="TIMESTAMP"/>
-            <result property="lastLoginTime" column="last_login_time" jdbcType="TIMESTAMP"/>
-            <result property="del" column="del" jdbcType="VARCHAR"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="loginAcct" column="login_acct" jdbcType="VARCHAR"/>
+        <result property="userPswd" column="user_pswd" jdbcType="CHAR"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="loginFailNum" column="login_fail_num" jdbcType="INTEGER"/>
+        <result property="codeNum" column="code_num" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="firstLoginTime" column="first_login_time" jdbcType="TIMESTAMP"/>
+        <result property="lastLoginTime" column="last_login_time" jdbcType="TIMESTAMP"/>
+        <result property="del" column="del" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -25,30 +24,26 @@
     </sql>
 
     <select id="selectRoleByUserId" resultType="cn.percent.usersystemjdk17.modules.role.entity.RoleEntity">
-        SELECT
-            *
-        FROM
-            role AS r
-                LEFT JOIN user_role_dept AS iur ON r.id = iur.role_id
-        WHERE
-            iur.user_id = #{userId}
-        AND
-            iur.del=0
+        SELECT *
+        FROM role AS r
+                 LEFT JOIN user_role_dept AS iur ON r.id = iur.role_id
+        WHERE iur.user_id = #{userId}
+          AND iur.del = 0
     </select>
 
 
     <insert id="allotRole">
         insert into user_role_dept(id,user_id,role_id,del)
         values
-        <foreach collection="roleIds" item="roleId"  separator=",">
+        <foreach collection="roleIds" item="roleId" separator=",">
             (replace(uuid(),"-",""),#{userId},#{roleId},0)
         </foreach>
     </insert>
 
     <delete id="deleteRoleByUserIdAndUserId">
         update user_role_dept set del=1 where user_id=#{userId} and role_id in
-                                         <foreach collection="roleIds" open="(" separator="," close=")" item="roleId">
-                                             #{roleId}
-                                         </foreach>
+        <foreach collection="roleIds" open="(" separator="," close=")" item="roleId">
+            #{roleId}
+        </foreach>
     </delete>
 </mapper>

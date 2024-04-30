@@ -1,4 +1,5 @@
 package cn.percent.usersystemjdk17.modules.user.dto;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.validation.constraints.NotNull;
@@ -54,9 +55,9 @@ public class UserQuery {
     @ApiModelProperty(value = "验证码")
     private String code;
 
-    @ApiModelProperty(value = "页码",required = true,example = "1")
+    @ApiModelProperty(value = "页码", required = true, example = "1")
     private Long pageNum;
 
-    @ApiModelProperty(value = "每一页显示多少条",required = true,example = "10")
+    @ApiModelProperty(value = "每一页显示多少条", required = true, example = "10")
     private Long pageSize;
 }

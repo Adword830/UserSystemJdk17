@@ -15,7 +15,7 @@ import java.io.OutputStream;
 public interface ImgCodeService {
 
 
-    String[] FONT_TYPES = { "\u5b8b\u4f53", "\u65b0\u5b8b\u4f53", "\u9ed1\u4f53", "\u6977\u4f53", "\u96b6\u4e66" };
+    String[] FONT_TYPES = {"\u5b8b\u4f53", "\u65b0\u5b8b\u4f53", "\u9ed1\u4f53", "\u6977\u4f53", "\u96b6\u4e66"};
 
     Integer IMG_CODE_LENGTH = 4;
 

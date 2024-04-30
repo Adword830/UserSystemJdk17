@@ -18,7 +18,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -178,7 +177,7 @@ public class UserApiController {
     @ApiOperation(value = "生成登录二维码", notes = "生成登录二维码", response = ApiResultUtils.class)
     @GetMapping("/qrCode")
     public ApiResultUtils<QrCodeDTO> qrCode() {
-       QrCodeDTO qrCodeDTO = userEntityService.buildQrCode();
+        QrCodeDTO qrCodeDTO = userEntityService.buildQrCode();
         return ApiResultUtils.ok(qrCodeDTO);
     }
 
@@ -242,13 +241,14 @@ public class UserApiController {
 
     /**
      * 禁用和启用用户
+     *
      * @param userQuery
      * @return
      */
     @ApiOperation(value = "禁用和启用用户", notes = "禁用和启用用户", response = ApiResultUtils.class)
     @PostMapping("/disable")
     public ApiResultUtils disable(@RequestBody UserQuery userQuery) {
-        userEntityService.disable(userQuery.getLoginAcct(),userQuery.getDisable());
+        userEntityService.disable(userQuery.getLoginAcct(), userQuery.getDisable());
         return ApiResultUtils.ok();
     }
 

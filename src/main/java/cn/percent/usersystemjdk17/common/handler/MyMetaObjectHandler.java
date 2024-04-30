@@ -22,14 +22,14 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
         // 当前的用户信息
         UserEntity userEntity = UserUtils.threadLocal.get();
         if (userEntity != null) {
-            this.setFieldValByName("createUser",userEntity.getLoginAcct(),metaObject);
-            this.setFieldValByName("createUserId",userEntity.getId(),metaObject);
-            this.setFieldValByName("updateUser",userEntity.getLoginAcct(),metaObject);
-            this.setFieldValByName("updateUserId",userEntity.getId(),metaObject);
+            this.setFieldValByName("createUser", userEntity.getLoginAcct(), metaObject);
+            this.setFieldValByName("createUserId", userEntity.getId(), metaObject);
+            this.setFieldValByName("updateUser", userEntity.getLoginAcct(), metaObject);
+            this.setFieldValByName("updateUserId", userEntity.getId(), metaObject);
         }
-        this.setFieldValByName("createTime",LocalDateTime.now(),metaObject);
-        this.setFieldValByName("updateTime",LocalDateTime.now(),metaObject);
-        this.setFieldValByName("del",false,metaObject);
+        this.setFieldValByName("createTime", LocalDateTime.now(), metaObject);
+        this.setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
+        this.setFieldValByName("del", false, metaObject);
 
     }
 
@@ -38,9 +38,9 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
         // 当前的用户信息
         UserEntity userEntity = UserUtils.threadLocal.get();
         if (userEntity != null) {
-            this.setFieldValByName("updateUser",userEntity.getLoginAcct(),metaObject);
-            this.setFieldValByName("updateUserId",userEntity.getId(),metaObject);
+            this.setFieldValByName("updateUser", userEntity.getLoginAcct(), metaObject);
+            this.setFieldValByName("updateUserId", userEntity.getId(), metaObject);
         }
-        this.setFieldValByName("updateTime",LocalDateTime.now(),metaObject);
+        this.setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
     }
 }

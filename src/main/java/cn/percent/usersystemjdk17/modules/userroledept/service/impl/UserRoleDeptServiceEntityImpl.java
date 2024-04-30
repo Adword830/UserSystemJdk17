@@ -8,13 +8,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**
-* @author zhangpengju
-* @description 针对表【user_role_dept】的数据库操作Service实现
-* @createDate 2023-09-20 10:12:06
-*/
+ * @author zhangpengju
+ * @description 针对表【user_role_dept】的数据库操作Service实现
+ * @createDate 2023-09-20 10:12:06
+ */
 @Service
 public class UserRoleDeptServiceEntityImpl extends ServiceImpl<UserRoleDeptEntityMapper, UserRoleDeptEntity>
-    implements UserRoleDeptEntityService {
+        implements UserRoleDeptEntityService {
 
 }
 

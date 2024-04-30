@@ -44,7 +44,7 @@ public class LogAop {
 
         log.info("请求参数:{}", JSON.toJSONString(map));
         Object result = joinPoint.proceed();
-        log.info("返回的参数:{}",JSON.toJSONString(result));
+        log.info("返回的参数:{}", JSON.toJSONString(result));
 
         return result;
     }
