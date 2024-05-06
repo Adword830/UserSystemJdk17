@@ -18,8 +18,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 @EnableScheduling
 public class UserScheduleTask {
 
-    @Autowired
-    private UserEntityService userEntityService;
+    private final UserEntityService userEntityService;
+
+    public UserScheduleTask(UserEntityService userEntityService) {
+        this.userEntityService = userEntityService;
+    }
 
     /**
      * 每天执行一次清除掉登录失败的次数

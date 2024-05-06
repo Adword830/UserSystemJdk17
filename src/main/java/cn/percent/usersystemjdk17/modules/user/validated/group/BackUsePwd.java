@@ -1,4 +1,4 @@
-package cn.percent.system.modules.user.validated.group;
+package cn.percent.usersystemjdk17.modules.user.validated.group;
 
 /**
  * @author: zhangpengju

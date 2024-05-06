@@ -588,20 +588,19 @@ public class SendMessageImpl implements SendMessage {
         String format2 = simpleDateFormat.format(date);
         WxMpTemplateData second = new WxMpTemplateData("second", "当前是: " + format2, "#173177");
         // 早上
-        if (flag == 1) {
-            weatherEntity = JSONObject.parseObject(weather, WeatherEntity.class);
-            if (split[1].equals(String.valueOf(holiday.size()))) {
-                first = new WxMpTemplateData("first", "今天是" + split[0] + "假期最后一天,明天就要上班了要注意早点休息预防打瞌睡"
-                        , "#173177");
-            } else {
-                first = new WxMpTemplateData("first", "今天是" + split[0] + "假期第" + split[1] + "天,祝老婆"
-                        + split[0] + "假期快乐"
-                        , "#173177");
-            }
-            String text = "今天天气: ";
-            int temp = Integer.parseInt(weatherEntity.getNow().getTemp());
-            third = this.getThird(text, temp, weatherEntity, third);
+        weatherEntity = JSONObject.parseObject(weather, WeatherEntity.class);
+        if (split[1].equals(String.valueOf(holiday.size()))) {
+            first = new WxMpTemplateData("first", "今天是" + split[0] + "假期最后一天,明天就要上班了要注意早点休息预防打瞌睡"
+                    , "#173177");
+        } else {
+            first = new WxMpTemplateData("first", "今天是" + split[0] + "假期第" + split[1] + "天,祝老婆"
+                    + split[0] + "假期快乐"
+                    , "#173177");
         }
+        String text = "今天天气: ";
+        int temp = Integer.parseInt(weatherEntity.getNow().getTemp());
+        third = this.getThird(text, temp, weatherEntity, third);
+
         int syyBirth = this.calBirth("2000-04-04", date);
         int zpjBirth = this.calBirth("2000-12-06", date);
         int together = this.calTogether("2020-07-15", date);
@@ -646,15 +645,14 @@ public class SendMessageImpl implements SendMessage {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String format2 = simpleDateFormat.format(date);
         WxMpTemplateData second = new WxMpTemplateData("second", "当前是: " + format2, "#173177");
-        // 早上
-        if (flag == 1) {
-            weatherEntity = JSON.parseObject(weather, WeatherEntity.class);
-            first = new WxMpTemplateData("first", "今天是" + holidayName + ",是休息日要好好休息不要熬夜哦"
-                    , "#173177");
-            String text = "今天天气: ";
-            int temp = Integer.parseInt(weatherEntity.getNow().getTemp());
-            third = this.getThird(text, temp, weatherEntity, third);
-        }
+
+        weatherEntity = JSON.parseObject(weather, WeatherEntity.class);
+        first = new WxMpTemplateData("first", "今天是" + holidayName + ",是休息日要好好休息不要熬夜哦"
+                , "#173177");
+        String text = "今天天气: ";
+        int temp = Integer.parseInt(weatherEntity.getNow().getTemp());
+        third = this.getThird(text, temp, weatherEntity, third);
+
         int syyBirth = this.calBirth("2000-04-04", date);
         int zpjBirth = this.calBirth("2000-12-06", date);
         int together = this.calTogether("2020-07-15", date);
