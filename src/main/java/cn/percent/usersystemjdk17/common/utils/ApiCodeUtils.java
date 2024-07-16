@@ -1,17 +1,20 @@
 package cn.percent.usersystemjdk17.common.utils;
 
+import lombok.Getter;
+
 /**
  * @author: zhangpengju
  * Date: 2021/11/19
  * Time: 14:23
  * Description:
  */
+@Getter
 public enum ApiCodeUtils {
 
     /**
      * 操作成功
      */
-    SUCCESS(200, "操作成功"),
+    ok(200, "操作成功"),
 
     UNAUTHORIZED(401, "非法访问"),
 
@@ -75,6 +78,10 @@ public enum ApiCodeUtils {
     ERROR_REQUEST_PARAM(6001, "error request param"),
 
     /**
+     * 数据库异常 重复的键
+     */
+    DUPLICATE_KEY(3100, "数据库中已存在该记录"),
+    /**
      * 参数格式验证
      */
     ERROR_CLIENTID_EMPTY(7003, "请选择客户"),
@@ -125,7 +132,7 @@ public enum ApiCodeUtils {
     TAG_REPEAT(9100, "标签名称重复"),
     TAG_TASK_REPEAT(9100, "该任务下标签%d名称重复"),
     TAG_NOT_EXIST(9101, "标签不存在"),
-    URL_TOKEN(9300, "令牌不存在"),
+    URL_TokEN(9300, "令牌不存在"),
     URL_FILE(9301, "文件链接令牌不存在"),
     CLIENT_REPEAT(9100, "客户名称重复"),
     CLIENT_STAFF_REPEAT(9100, "客户职员名称重复"),
@@ -190,46 +197,30 @@ public enum ApiCodeUtils {
 
     NOT_LOGGED_IN(4000, "您当前未登录请登录后再试"),
     NOT_LOGGED_ABNORMAL(4001, "登录状态异常请重新登录"),
-    LOGON__FAILURE(4002, "登录失效请重新登录"),
+    LOGON_FAIL(4002, "登录失效请重新登录"),
     NUMBER_OF_LOGIN_ERROR(4003, "失败次数超过限制"),
     LOGIN_IMG_CODE_NOT_NULL(4004, "验证码不能为空"),
     LOGIN_IMG_CODE_FAIL(4005, "验证码错误"),
     LOGIN_USERNAME_OR_PASSWORD(4006, "用户名或者密码不能为空"),
     LOGIN_USERNAME_NULL(4007, "当前用户暂未注册"),
     USER_DISABLE(4008, "当前用户被禁用"),
+    USER_NOT_EXIST(4009, "当前用户不存在"),
+    USER_IS_REGISTER(4010, "用户已经注册"),
     /**
      * 二维码
      */
-    QRCODE_SCAN_SUCCESS(3000, "扫描成功");
+    QRCODE_SCAN_ok(3000, "扫描成功"),
+    QRCODE_SCAN_OVERDUE(3100, "二维码已过期");
 
     private final int code;
-    private String msg;
 
-    ApiCodeUtils(final int code, String msg) {
+    private final String msg;
+
+    ApiCodeUtils(int code, String msg) {
         this.code = code;
         this.msg = msg;
     }
 
-    public ApiCodeUtils getApiCode(int code) {
-        ApiCodeUtils[] ecs = ApiCodeUtils.values();
-        for (ApiCodeUtils ec : ecs) {
-            if (ec.getCode() == code) {
-                return ec;
-            }
-        }
-        return SUCCESS;
-    }
 
-    public int getCode() {
-        return code;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
 
 }

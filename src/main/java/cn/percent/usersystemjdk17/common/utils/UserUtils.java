@@ -1,6 +1,7 @@
 package cn.percent.usersystemjdk17.common.utils;
 
 import cn.hutool.core.lang.Validator;
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.percent.usersystemjdk17.common.exception.BaseException;
 import cn.percent.usersystemjdk17.modules.user.entity.UserEntity;
@@ -39,10 +40,10 @@ public class UserUtils {
     /**
      * 校验邮箱是否符合规则
      *
-     * @param email
+     * @param email 邮箱
      */
     public static void checkEmail(String email) {
-        if (StrUtil.isEmpty(email)) {
+        if (CharSequenceUtil.isEmpty(email)) {
             throw new BaseException("填写的邮箱不能为空");
         }
         boolean flag = Validator.isEmail(email);

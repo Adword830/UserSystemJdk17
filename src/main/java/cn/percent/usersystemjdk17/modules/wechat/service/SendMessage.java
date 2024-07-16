@@ -44,6 +44,7 @@ public interface SendMessage {
      * @param signature 签名
      * @param timestamp 时间戳
      * @param nonce     随机数
+     * @param echostr  随机字符串
      * @return 返回校验结果
      */
     String checkSignature(String signature, String timestamp, String nonce, String echostr);

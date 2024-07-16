@@ -149,6 +149,7 @@ public class SendMessageImpl implements SendMessage {
         }
 
         if (Objects.nonNull(weatherEntity)) {
+
             // 设置跳转url
             wxMpTemplateMessage.setUrl(weatherEntity.getFxLink());
         }
@@ -290,11 +291,11 @@ public class SendMessageImpl implements SendMessage {
     /**
      * 获取第二行文本
      *
-     * @param text
-     * @param temp
-     * @param weatherEntity
-     * @param third
-     * @return
+     * @param text text
+     * @param temp temp
+     * @param weatherEntity weatherEntity
+     * @param third third
+     * @return 模板数据
      */
     private WxMpTemplateData getThird(String text, int temp, WeatherEntity weatherEntity, WxMpTemplateData third) {
         if (temp <= 15) {

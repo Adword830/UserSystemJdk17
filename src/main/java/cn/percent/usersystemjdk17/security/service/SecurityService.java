@@ -12,17 +12,17 @@ public interface SecurityService {
     /**
      * checkUser校验当前用户是否为本人登录
      *
-     * @param authentication
-     * @param id
-     * @return
+     * @param authentication 当前用户信息
+     * @param id             当前用户id
+     * @return 是否为本人登录
      */
     Boolean checkUser(Authentication authentication, Long id);
 
     /**
      * 判断当前系统是否存在当前用户
      *
-     * @param id
-     * @return
+     * @param id   当前用户id
+     * @return 是否存在当前用户
      */
     Boolean isUser(Long id);
 }

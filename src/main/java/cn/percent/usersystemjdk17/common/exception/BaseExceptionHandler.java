@@ -23,74 +23,58 @@ import java.util.List;
 @RestControllerAdvice
 public class BaseExceptionHandler {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * 自定义异常
      */
     @ExceptionHandler(BaseException.class)
     public ApiResultUtils<String> handleBaseException(BaseException e) {
-        return ApiResultUtils.result(ApiCodeUtils.FAIL, e.getMsg(), null);
+        return ApiResultUtils.fail(e.getStatusCode(), e.getMsg());
     }
 
     /**
      * 唯一值异常处理handler
-     *
-     * @param e
-     * @return
      */
     @ExceptionHandler(DuplicateKeyException.class)
     public ApiResultUtils<String> handleDuplicateKeyException(DuplicateKeyException e) {
         logger.error(e.getMessage(), e);
-        return ApiResultUtils.fail("数据库中已存在该记录");
+        return ApiResultUtils.fail(ApiCodeUtils.DUPLICATE_KEY);
     }
 
     /**
      * 通用异常处理器
-     *
-     * @param e
-     * @return
      */
     @ExceptionHandler(Exception.class)
-    public ApiResultUtils handleException(Exception e) {
+    public ApiResultUtils<String> handleException(Exception e) {
         logger.error(e.getMessage(), e);
-        return ApiResultUtils.result(ApiCodeUtils.FAIL, e.getMessage(), null);
+        return ApiResultUtils.fail(ApiCodeUtils.FAIL, e.getMessage());
     }
 
     /**
      * 捕获@PreAuthorize注解无权访问的信息
-     *
-     * @param e
-     * @return
      */
     @ExceptionHandler(AccessDeniedException.class)
-    public ApiResultUtils handleException(AccessDeniedException e) {
+    public ApiResultUtils<String> handleException(AccessDeniedException e) {
         logger.error(e.getMessage(), e);
-        return ApiResultUtils.result(ApiCodeUtils.FORBIDDEN, ApiCodeUtils.FORBIDDEN.getMsg(), null);
+        return ApiResultUtils.fail(ApiCodeUtils.FORBIDDEN);
     }
 
     /**
      * 登录失败抛出异常
-     *
-     * @param e
-     * @return
      */
     @ExceptionHandler(AuthenticationException.class)
-    public ApiResultUtils handleException(AuthenticationException e) {
+    public ApiResultUtils<String> handleException(AuthenticationException e) {
         logger.error(e.getMessage(), e);
-        return ApiResultUtils.result(ApiCodeUtils.JWT_LOGIN_FAILURE, ApiCodeUtils.JWT_LOGIN_FAILURE.getMsg(), null);
+        return ApiResultUtils.fail(ApiCodeUtils.JWT_LOGIN_FAILURE);
     }
 
 
     /**
      * 用来捕捉spring提供的@Validated所抛出的异常
-     *
-     * @param methodArgumentNotValidException
-     * @return
-     * @throws Exception
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ApiResultUtils exceptionHandler(MethodArgumentNotValidException methodArgumentNotValidException) throws Exception {
+    public ApiResultUtils<String> exceptionHandler(MethodArgumentNotValidException methodArgumentNotValidException) {
         List<FieldError> fieldErrors = methodArgumentNotValidException.getBindingResult().getFieldErrors();
         StringBuilder message = new StringBuilder();
         for (int i = 0; i < fieldErrors.size(); i++) {
@@ -99,6 +83,6 @@ public class BaseExceptionHandler {
                 message.append(";");
             }
         }
-        return ApiResultUtils.result(ApiCodeUtils.PARAMETER_EXCEPTION, message.toString(), null);
+        return ApiResultUtils.fail(ApiCodeUtils.PARAMETER_EXCEPTION.getCode(), message.toString());
     }
 }

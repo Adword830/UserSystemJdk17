@@ -1,5 +1,6 @@
 package cn.percent.usersystemjdk17.common.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 
 import javax.crypto.BadPaddingException;
@@ -22,6 +23,7 @@ import java.util.Map;
  * Time: 16:03
  * Description:
  */
+@Slf4j
 public class Rsa1024Utils {
 
     public static final String PRIVATE_KEY = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBANWwc/S1T1VQXJmJS3Z0Xt3edhL5" +
@@ -37,10 +39,11 @@ public class Rsa1024Utils {
             "XyiqNRcFD/2T+FJmA3tRy4KMxRPn7WrECcDlZQRXE8onJhz5WuPxXz1YFFt19vnI+eniXXWwfunSFICa1g/5f81YH+b1z/wqyM/DQYpoL+y" +
             "fNwae0BqUhU71SmlTJ7yM68nxQIDAQAB";
 
+    public static final String RSA= "RSA";
     /**
      * 用于封装随机产生的公钥与私钥
      */
-    private static Map<Integer, String> keyMap = new HashMap<Integer, String>();
+    private static final Map<Integer, String> keyMap = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
         // 生成公钥和私钥
@@ -48,15 +51,14 @@ public class Rsa1024Utils {
         // 加密字符串
         String message = "123456";
         String messageEn = encrypt(message, PUBLIC_KEY);
-        System.out.println(message + "\t加密后的字符串为:" + messageEn);
+        log.info("加密前：{},加密后的字符串为: {}",message , messageEn);
         String messageDe = decrypt(messageEn, PRIVATE_KEY);
-        System.out.println("还原后的字符串为:" + messageDe);
+        log.info("还原后的字符串为:{}",  messageDe);
     }
 
     /**
      * 随机生成密钥对
      *
-     * @throws NoSuchAlgorithmException
      */
     public static void genKeyPair() throws NoSuchAlgorithmException {
         // KeyPairGenerator类用于生成公钥和私钥对，基于RSA算法生成对象
@@ -85,12 +87,12 @@ public class Rsa1024Utils {
      * @return 密文
      * @throws Exception 加密过程中的异常信息
      */
-    public static String encrypt(String str, String publicKey) throws Exception {
+    public static String encrypt(String str, String publicKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         //base64编码的公钥
         byte[] decoded = Base64.decodeBase64(publicKey);
         RSAPublicKey pubKey = (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(decoded));
         //RSA加密
-        Cipher cipher = Cipher.getInstance("RSA");
+        Cipher cipher = Cipher.getInstance(RSA);
         cipher.init(Cipher.ENCRYPT_MODE, pubKey);
         return Base64.encodeBase64String(cipher.doFinal(str.getBytes(StandardCharsets.UTF_8)));
     }
@@ -109,28 +111,28 @@ public class Rsa1024Utils {
         byte[] decoded = Base64.decodeBase64(privateKey);
         RSAPrivateKey priKey = null;
         try {
-            priKey = (RSAPrivateKey) KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(decoded));
+            priKey = (RSAPrivateKey) KeyFactory.getInstance(RSA).generatePrivate(new PKCS8EncodedKeySpec(decoded));
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            e.fillInStackTrace();
         }
         //RSA解密
         Cipher cipher = null;
         try {
-            cipher = Cipher.getInstance("RSA");
+            cipher = Cipher.getInstance(RSA);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            e.printStackTrace();
+            e.fillInStackTrace();
         }
         try {
             assert cipher != null;
             cipher.init(Cipher.DECRYPT_MODE, priKey);
         } catch (InvalidKeyException e) {
-            e.printStackTrace();
+            e.fillInStackTrace();
         }
         String outStr = null;
         try {
             outStr = new String(cipher.doFinal(inputByte));
         } catch (IllegalBlockSizeException | BadPaddingException e) {
-            e.printStackTrace();
+            e.fillInStackTrace();
         }
         return outStr;
     }

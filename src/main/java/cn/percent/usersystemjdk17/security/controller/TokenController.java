@@ -72,6 +72,6 @@ public class TokenController {
             }
         }
         // 否则直接返回redis中的token
-        return ApiResultUtils.fail(ApiCodeUtils.LOGON__FAILURE);
+        return ApiResultUtils.fail(ApiCodeUtils.LOGON_FAIL);
     }
 }

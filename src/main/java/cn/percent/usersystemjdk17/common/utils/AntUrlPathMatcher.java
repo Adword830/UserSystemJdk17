@@ -35,10 +35,6 @@ public class AntUrlPathMatcher {
         return path;
     }
 
-    public void setRequiresLowerCaseUrl(boolean requiresLowerCaseUrl) {
-        this.requiresLowerCaseUrl = requiresLowerCaseUrl;
-    }
-
     public boolean pathMatchesUrl(Object path, String url) {
         if (("/**".equals(path)) || ("**".equals(path))) {
             return true;

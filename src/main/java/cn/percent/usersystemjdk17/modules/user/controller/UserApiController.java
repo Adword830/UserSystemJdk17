@@ -1,5 +1,6 @@
 package cn.percent.usersystemjdk17.modules.user.controller;
 
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.percent.usersystemjdk17.common.enums.QrCodeStatusEnum;
 import cn.percent.usersystemjdk17.common.server.WebSocketServer;
@@ -218,7 +219,7 @@ public class UserApiController {
     @GetMapping("/qrCodeScanSuc")
     public ApiResultUtils<String> qrCodeScanSuc(@RequestParam("uuid") String uuid) {
         String status = (String) redisUtils.get(uuid);
-        if (StrUtil.isNotEmpty(status)) {
+        if (CharSequenceUtil.isNotEmpty(status)) {
             webSocketServer.sendMessageTo("二维码扫描成功", uuid);
             redisUtils.set(uuid, QrCodeStatusEnum.EXPIRED.getValue().toString());
             return ApiResultUtils.ok("二维码扫描成功");

@@ -120,7 +120,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         }
         TokenDTO token = tokenService.getToken(loginDTO, Boolean.TRUE);
         redisUtils.set("token:" + userEntity.getId().toString(), JSON.toJSONString(token), 60L, TimeUnit.MINUTES);
-        ApiResultUtils.write(response, JSON.toJSONString(new ResponseDTO<>(ApiCodeUtils.SUCCESS.getCode(), "登录成功", token)));
+        ApiResultUtils.write(response, JSON.toJSONString(new ResponseDTO<>(ApiCodeUtils.ok.getCode(), "登录成功", token)));
     }
 
     @Override

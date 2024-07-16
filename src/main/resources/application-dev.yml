@@ -127,3 +127,20 @@ login:
 webSocketConfig:
   # WebSocket URL
   ws: ws://101.43.142.189:9091/webSocket/
+
+# application.properties
+security:
+  permitAllPaths:
+    - /wechat/**
+    - /system/user/sendInfo
+    - /system/user/sendMessage
+    - /system/user/register
+    - /token/**
+    - /v3/**
+    - /webjars/**
+    - /swagger-ui.html
+    - /swagger-resources/**
+    - /login
+    - /system/user/register
+    - /v2/api-docs
+    - /doc.html

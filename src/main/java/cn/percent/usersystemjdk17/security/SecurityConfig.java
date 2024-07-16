@@ -9,6 +9,7 @@ import cn.percent.usersystemjdk17.security.handler.JwtAccessDeniedHandler;
 import cn.percent.usersystemjdk17.security.handler.JwtAuthenticationEntryPoint;
 import cn.percent.usersystemjdk17.security.handler.JwtLogoutSuccessHandler;
 import cn.percent.usersystemjdk17.security.handler.MyLogoutHandler;
+import cn.percent.usersystemjdk17.security.properties.SecurityProperties;
 import cn.percent.usersystemjdk17.security.service.MyUserDetailsService;
 import cn.percent.usersystemjdk17.security.service.TokenService;
 import org.springframework.context.annotation.Bean;
@@ -53,14 +54,16 @@ public class SecurityConfig {
 
     private final ImgCodeService imgCodeService;
 
+    private final SecurityProperties securityProperties;
 
-    public SecurityConfig(TokenService tokenService, UserEntityService userEntityService, MyUserDetailsService myUserDetailsService, AuthenticationConfiguration authenticationProvider, RedisUtils redisUtils, ImgCodeService imgCodeService) {
+    public SecurityConfig(TokenService tokenService, UserEntityService userEntityService, MyUserDetailsService myUserDetailsService, AuthenticationConfiguration authenticationProvider, RedisUtils redisUtils, ImgCodeService imgCodeService, SecurityProperties securityProperties) {
         this.tokenService = tokenService;
         this.userEntityService = userEntityService;
         this.myUserDetailsService = myUserDetailsService;
         this.authenticationProvider = authenticationProvider;
         this.redisUtils = redisUtils;
         this.imgCodeService = imgCodeService;
+        this.securityProperties = securityProperties;
     }
 
     /**
@@ -72,20 +75,10 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.authorizeHttpRequests(registry -> registry
-                        .requestMatchers("/wechat/**",
-                                "/system/user/sendInfo",
-                                "/system/user/sendMessage",
-                                "/system/user/register",
-                                "/token/**",
-                                "/v3/**",
-                                "/webjars/**",
-                                "/swagger-ui.html",
-                                "/swagger-resources/**",
-                                "/login",
-                                "/system/user/register",
-                                "/v2/api-docs", "/doc.html").permitAll()
-                        .anyRequest().authenticated())
+        http.authorizeHttpRequests(registry -> {
+                    securityProperties.getPermitAllPaths().forEach(path -> registry.requestMatchers(path).permitAll());
+                    registry.anyRequest().authenticated();
+                })
                 .csrf(AbstractHttpConfigurer::disable)
                 .authenticationProvider(authenticationProvider())
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -136,7 +129,7 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
         return new JwtAuthenticationFilter(authenticationProvider.getAuthenticationManager(), tokenService,
-                jwtAuthenticationEntryPoint(), userEntityService, myUserDetailsService, redisUtils);
+                jwtAuthenticationEntryPoint(), userEntityService, myUserDetailsService);
     }
 
     /**

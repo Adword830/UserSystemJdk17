@@ -33,7 +33,7 @@ public class LogAop {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         assert attributes != null;
         var request = attributes.getRequest();
-
+        // 获取请求参数
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("请求路径", request.getRequestURI());
         map.put("ip地址", IpUtils.getRequestIp());

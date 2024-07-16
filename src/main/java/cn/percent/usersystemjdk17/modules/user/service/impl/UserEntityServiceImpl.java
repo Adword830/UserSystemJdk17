@@ -10,7 +10,6 @@ import cn.percent.usersystemjdk17.common.exception.BaseException;
 import cn.percent.usersystemjdk17.common.server.WebSocketServer;
 import cn.percent.usersystemjdk17.common.utils.*;
 import cn.percent.usersystemjdk17.modules.role.entity.RoleEntity;
-import cn.percent.usersystemjdk17.modules.role.service.RoleEntityService;
 import cn.percent.usersystemjdk17.modules.user.dto.QrCodeDTO;
 import cn.percent.usersystemjdk17.modules.user.dto.UpdateUserQuery;
 import cn.percent.usersystemjdk17.modules.user.dto.UserDTO;
@@ -70,7 +69,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
     private final QrCodeService qrCodeService;
     private final RedisUtils redisUtils;
     private final WebSocketServer webSocketServer;
-    private final RoleEntityService roleEntityService;
+
     @Value("${spring.mail.username}")
     private String from;
     @Value("${spring.mail.subject}")
@@ -84,12 +83,11 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
     @Resource
     private JavaMailSender javaMailSender;
 
-    public UserEntityServiceImpl(UserRoleDeptEntityService userRoleDeptEntityService, QrCodeService qrCodeService, RedisUtils redisUtils, WebSocketServer webSocketServer, RoleEntityService roleEntityService) {
+    public UserEntityServiceImpl(UserRoleDeptEntityService userRoleDeptEntityService, QrCodeService qrCodeService, RedisUtils redisUtils, WebSocketServer webSocketServer) {
         this.userRoleDeptEntityService = userRoleDeptEntityService;
         this.qrCodeService = qrCodeService;
         this.redisUtils = redisUtils;
         this.webSocketServer = webSocketServer;
-        this.roleEntityService = roleEntityService;
     }
 
     /**
@@ -102,33 +100,16 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
     public static String buildContent(String title) {
         //加载邮件html模板
         ClassPathResource resource = new ClassPathResource("/template/mailtemplate.ftl");
-        InputStream inputStream = null;
-        BufferedReader fileReader = null;
         StringBuilder buffer = new StringBuilder();
         String line = "";
-        try {
-            inputStream = resource.getStream();
-            fileReader = new BufferedReader(new InputStreamReader(inputStream));
+        try (InputStream inputStream = resource.getStream();
+             BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream))) {
             while ((line = fileReader.readLine()) != null) {
                 buffer.append(line);
             }
         } catch (Exception e) {
             log.info("发送邮件读取模板失败{}", e);
-        } finally {
-            if (fileReader != null) {
-                try {
-                    fileReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            e.fillInStackTrace();
         }
         //替换html模板中的参数
         return MessageFormat.format(buffer.toString(), title);
@@ -153,7 +134,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
         // 判断用户是否已经注册
         UserEntity userEntity = query().select("id").eq("login_acct", userQuery.getLoginAcct()).one();
         if (userEntity != null) {
-            throw new BaseException("当前用户已经注册");
+            throw new BaseException(ApiCodeUtils.USER_IS_REGISTER);
         }
         // 判断邮箱是否符合规则
         UserUtils.checkEmail(userQuery.getEmail());
@@ -165,7 +146,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
         // 判断验证码是否相同
         String code = (String) redisUtils.get(userQuery.getEmail() + "#");
         if (!Objects.equals(code, userQuery.getCode())) {
-            throw new BaseException("验证码错误");
+            throw new BaseException("验证码错误",1007);
         }
         UserEntity user = new UserEntity();
         // 前端传过来的密码都是经过Rsa加密,需要对密码进行解密操作
@@ -195,11 +176,11 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
     public String sendMessage(String email, Boolean backUsePwd) {
         UserEntity userEntity = query().select("id").eq("email", email).one();
         if (userEntity != null) {
-            throw new BaseException(Constant.EMAIL_IS_EXIST);
+            throw new BaseException(Constant.EMAIL_IS_EXIST, 1000);
         }
         String code = (String) redisUtils.get(email + "#");
         if (CharSequenceUtil.isNotEmpty(code)) {
-            throw new BaseException(Constant.REPEAT_GET_CODE);
+            throw new BaseException(Constant.REPEAT_GET_CODE, 1001);
         }
         // 校验邮箱
         UserUtils.checkEmail(email);
@@ -282,14 +263,14 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
         if (Boolean.TRUE.equals(updateUserQuery.getFlag())) {
             String code = (String) redisUtils.get(updateUserQuery.getEmail() + "&");
             if (!Objects.equals(updateUserQuery.getCode(), code)) {
-                throw new BaseException("验证码错误");
+                throw new BaseException("验证码错误", 1003);
             }
         }
         if (updateUserQuery.getPwd().equals(userEntity.getUserPswd())) {
-            throw new BaseException("原密码输入错误");
+            throw new BaseException("原密码输入错误", 1004);
         }
         if (updateUserQuery.getNewPwd().equals(userEntity.getUserPswd())) {
-            throw new BaseException("原密码和新密码一致");
+            throw new BaseException("原密码和新密码一致", 1005);
         }
         UpdateWrapper<UserEntity> queryWrapper = new UpdateWrapper<>();
         queryWrapper.eq("id", updateUserQuery.getId()).set("userPswd", updateUserQuery.getNewPwd());
@@ -337,7 +318,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
 
     @Override
     public QrCodeDTO buildQrCode() {
-        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        String uuid = UUID.randomUUID().toString();
         String content = url + "?uuid=" + uuid;
         log.info("qrCodeUUID {} | url {}", uuid, content);
         //设置长宽
@@ -351,15 +332,15 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
     @Override
     public String qrCodeScan(String uuid) {
         if (redisUtils.get(uuid) == null) {
-            throw new BaseException("二维码过期");
+            throw new BaseException(ApiCodeUtils.QRCODE_SCAN_OVERDUE);
         }
         log.info("成功扫描二维码信息");
         // 扫描成功之后刷新二维码三分钟过期
         redisUtils.set(uuid, QrCodeStatusEnum.SCANNED.getValue().toString(), 3L, TimeUnit.MINUTES);
         try {
-            webSocketServer.sendMessageAll(JSON.toJSONString(ApiResultUtils.ok(ApiCodeUtils.QRCODE_SCAN_SUCCESS)), uuid);
+            webSocketServer.sendMessageAll(JSON.toJSONString(ApiResultUtils.ok(uuid)), uuid);
         } catch (IOException e) {
-            e.printStackTrace();
+            e.fillInStackTrace();
         }
         return uuid;
 
@@ -381,7 +362,7 @@ public class UserEntityServiceImpl extends ServiceImpl<UserEntityMapper, UserEnt
         String loginAcct = (String) claims.get("loginAcct");
         Long num = this.query().eq("login_acct", loginAcct).count();
         if (num == null) {
-            throw new BaseException("用户信息不符合,登录失败");
+            throw new BaseException("用户信息不符合,登录失败", 1006);
         }
         // 修改二维码状态为登录成功的状态并在1分钟后进行删除
         redisUtils.set(uuid, QrCodeStatusEnum.FINISH.getValue().toString(), 1L, TimeUnit.MINUTES);

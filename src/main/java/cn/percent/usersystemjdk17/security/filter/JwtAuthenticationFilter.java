@@ -2,7 +2,6 @@ package cn.percent.usersystemjdk17.security.filter;
 
 import cn.percent.usersystemjdk17.common.utils.ApiCodeUtils;
 import cn.percent.usersystemjdk17.common.utils.ApiResultUtils;
-import cn.percent.usersystemjdk17.common.utils.RedisUtils;
 import cn.percent.usersystemjdk17.common.utils.UserUtils;
 import cn.percent.usersystemjdk17.modules.user.entity.UserEntity;
 import cn.percent.usersystemjdk17.modules.user.entity.details.MyUserDetails;
@@ -36,30 +35,27 @@ import java.io.IOException;
 @Slf4j
 public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
-    public static final String bearer = "Bearer ";
+    public static final String BEARER = "Bearer ";
 
-    public static final String accessToken = "accessToken";
+    public static final String ACCESS_TokEN = "accessToken";
 
-    private TokenService tokenService;
+    private final TokenService tokenService;
 
-    private AuthenticationEntryPoint authenticationEntryPoint;
+    private final AuthenticationEntryPoint authenticationEntryPoint;
 
-    private UserEntityService userEntityService;
+    private final UserEntityService userEntityService;
 
-    private MyUserDetailsService myUserDetailsService;
-
-    private RedisUtils redisUtils;
+    private final MyUserDetailsService myUserDetailsService;
 
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager, TokenService tokenService,
                                    AuthenticationEntryPoint authenticationEntryPoint, UserEntityService userEntityService,
-                                   MyUserDetailsService myUserDetailsService, RedisUtils redisUtils) {
+                                   MyUserDetailsService myUserDetailsService) {
         super(authenticationManager);
         this.tokenService = tokenService;
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.userEntityService = userEntityService;
         this.myUserDetailsService = myUserDetailsService;
-        this.redisUtils = redisUtils;
     }
 
     @Override
@@ -70,33 +66,28 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
     /**
      * 当前这个类进行token的校验
      *
-     * @param request
-     * @param response
-     * @param chain
-     * @throws IOException
-     * @throws ServletException
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         // 获取到指定的token
         String bearerToken = request.getHeader("Authorization");
-        if (bearerToken == null || !bearerToken.startsWith(bearer)) {
+        if (bearerToken == null || !bearerToken.startsWith(BEARER)) {
             // 释放给下一个过滤器
             chain.doFilter(request, response);
             return;
         }
-        String token = bearerToken.replace(bearer, "");
+        String token = bearerToken.replace(BEARER, "");
         // 校验当前token是否合法（包括失效）
         Claims claims = tokenService.checkToken(token);
         // 是否accessToken的校验
         String status = (String) claims.get("status");
-        if (accessToken.equals(status)) {
+        if (ACCESS_TokEN.equals(status)) {
             // 用户id
             Long userId = (Long) claims.get("userId");
             UserEntity userEntity = userEntityService.lambdaQuery().eq(UserEntity::getId, userId).one();
             if (Boolean.TRUE.equals(userEntity.getDisable())) {
-                ResponseDTO dto = new ResponseDTO<>(ApiCodeUtils.USER_DISABLE.getCode(), ApiCodeUtils.USER_DISABLE.getMsg());
+                ResponseDTO<Object> dto = new ResponseDTO<>(ApiCodeUtils.USER_DISABLE.getCode(), ApiCodeUtils.USER_DISABLE.getMsg());
                 ApiResultUtils.write(response, JSON.toJSONString(dto));
                 return;
             }
@@ -109,7 +100,6 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         // 释放给下一个过滤器
         chain.doFilter(request, response);
         log.info("成功：{}", request.getRequestURL().toString());
-        return;
     }
 
 

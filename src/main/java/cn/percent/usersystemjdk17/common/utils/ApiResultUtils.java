@@ -1,6 +1,5 @@
 package cn.percent.usersystemjdk17.common.utils;
 
-import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -13,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author: zhangpengju
@@ -39,77 +36,92 @@ public class ApiResultUtils<T> {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime time;
 
-    public ApiResultUtils() {
-
+    public ApiResultUtils(ApiCodeUtils apiCode) {
+        this.code = apiCode.getCode();
+        this.msg = apiCode.getMsg();
     }
 
-    public static ApiResultUtils result(boolean flag) {
-        if (flag) {
-            return ok();
-        }
-        return fail("");
+    public ApiResultUtils(Integer code, String msg) {
+        this.code = code;
+        this.msg = msg;
     }
 
-    public static ApiResultUtils result(ApiCodeUtils apiCode) {
-        return result(apiCode, null);
+    public ApiResultUtils(String msg) {
+        this.code = -1;
+        this.msg = msg;
     }
 
-    public static <T> ApiResultUtils<T> result(ApiCodeUtils apiCode, T data) {
-        return result(apiCode, null, data);
+    /**
+     * 失败带数据
+     *
+     * @param apiCode 错误码
+     * @param data    数据
+     * @return 结果
+     */
+    public static <T> ApiResultUtils<T> fail(ApiCodeUtils apiCode, T data) {
+        ApiResultUtils<T> resultUtils = new ApiResultUtils<>(apiCode);
+        resultUtils.setData(data);
+        resultUtils.setTime(LocalDateTime.now());
+        return resultUtils;
+    }
+
+    /**
+     * 失败不带数据
+     *
+     * @param apiCode 错误码
+     * @return 结果
+     */
+    public static <T> ApiResultUtils<T> fail(ApiCodeUtils apiCode) {
+        ApiResultUtils<T> resultUtils = new ApiResultUtils<>(apiCode);
+        resultUtils.setTime(LocalDateTime.now());
+        return resultUtils;
+    }
+
+    /**
+     * 失败带自定义code和msg
+     *
+     * @param code 错误码
+     * @param msg  错误信息
+     * @return 结果
+     */
+    public static <T> ApiResultUtils<T> fail(Integer code, String msg) {
+        ApiResultUtils<T> resultUtils = new ApiResultUtils<>(code, msg);
+        resultUtils.setTime(LocalDateTime.now());
+        return resultUtils;
+    }
+
+    /**
+     * 失败带自定义msg
+     *
+     * @param msg  错误信息
+     * @return 结果
+     */
+    public static <T> ApiResultUtils<T> fail(String msg) {
+        ApiResultUtils<T> resultUtils = new ApiResultUtils<>(msg);
+        resultUtils.setTime(LocalDateTime.now());
+        return resultUtils;
     }
 
 
-    public static <T> ApiResultUtils<T> result(ApiCodeUtils apiCode, String msg, T data) {
-        String message = apiCode.getMsg();
-        if (StrUtil.isNotBlank(msg)) {
-            message = msg;
-        }
-        return ApiResultUtils.<T>builder()
-                .code(apiCode.getCode())
-                .msg(message)
-                .data(data)
-                .time(LocalDateTime.now())
-                .build();
+    /**
+     * 成功带数据
+     *
+     * @param data 数据
+     * @return 结果
+     */
+    public static <T> ApiResultUtils<T> ok(T data) {
+        ApiResultUtils<T> resultUtils = new ApiResultUtils<>(ApiCodeUtils.ok);
+        resultUtils.setData(data);
+        resultUtils.setTime(LocalDateTime.now());
+        return resultUtils;
     }
 
     public static <T> ApiResultUtils<T> ok() {
-        return ok(null);
+        ApiResultUtils<T> resultUtils = new ApiResultUtils<>(ApiCodeUtils.ok);
+        resultUtils.setTime(LocalDateTime.now());
+        return resultUtils;
     }
 
-    public static <T> ApiResultUtils<T> ok(T data) {
-        return result(ApiCodeUtils.SUCCESS, data);
-    }
-
-    public static <T> ApiResultUtils<T> ok(String msg) {
-        return result(ApiCodeUtils.SUCCESS, msg, null);
-    }
-
-    public static ApiResultUtils ok(String key, Object value) {
-        Map<String, Object> map = new HashMap<>(1);
-        map.put(key, value);
-        return ok(map);
-    }
-
-    public static ApiResultUtils fail(ApiCodeUtils apiCode) {
-        return result(apiCode, null);
-    }
-
-    public static ApiResultUtils fail(String msg) {
-        return result(ApiCodeUtils.FAIL, msg, null);
-    }
-
-    public static ApiResultUtils fail(ApiCodeUtils apiCode, Object data) {
-        if (ApiCodeUtils.SUCCESS == apiCode) {
-            throw new RuntimeException("失败结果状态码不能为" + ApiCodeUtils.SUCCESS.getCode());
-        }
-        return result(apiCode, data);
-    }
-
-    public static ApiResultUtils fail(String key, Object value) {
-        Map<String, Object> map = new HashMap<>(1);
-        map.put(key, value);
-        return result(ApiCodeUtils.FAIL, map);
-    }
 
     public static void write(HttpServletResponse response, String body) {
         write(response, null, body);
@@ -123,17 +135,11 @@ public class ApiResultUtils<T> {
         } else {
             response.setStatus(status);
         }
-
         if (body != null) {
-            PrintWriter writer = null;
-            try {
-                writer = response.getWriter();
+            try (PrintWriter writer = response.getWriter()) {
                 writer.write(body);
             } catch (IOException e) {
-                log.error("response write error:", e);
-            } finally {
-                writer.flush();
-                writer.close();
+                log.error("response write fail:", e);
             }
         }
     }

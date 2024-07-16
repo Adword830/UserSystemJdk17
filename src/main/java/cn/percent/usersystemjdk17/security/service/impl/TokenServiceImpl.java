@@ -1,5 +1,7 @@
 package cn.percent.usersystemjdk17.security.service.impl;
 
+import cn.percent.usersystemjdk17.common.exception.BaseException;
+import cn.percent.usersystemjdk17.common.utils.ApiCodeUtils;
 import cn.percent.usersystemjdk17.common.utils.JwtUtils;
 import cn.percent.usersystemjdk17.common.utils.RedisUtils;
 import cn.percent.usersystemjdk17.modules.user.dto.LoginDTO;
@@ -9,6 +11,7 @@ import com.alibaba.fastjson2.JSON;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -66,7 +69,7 @@ public class TokenServiceImpl implements TokenService {
                 }
             }
         } catch (Exception e) {
-            log.info("token解析失败，请检测token格式是否正确,错误信息:{}", e.getMessage());
+            throw new BaseException(ApiCodeUtils.JWT_EXPIRED.getMsg(), ApiCodeUtils.JWT_EXPIRED.getCode());
         }
         return null;
     }
