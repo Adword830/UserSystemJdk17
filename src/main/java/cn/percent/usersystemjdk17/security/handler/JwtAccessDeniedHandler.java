@@ -27,15 +27,14 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     /**
      * 解决用户访问资源无权限时的返回
      *
-     * @param request
-     * @param response
-     * @param accessDeniedException
-     * @throws IOException
-     * @throws ServletException
+     * @param request HttpServletRequest
+     * @param response HttpServletResponse
+     * @param accessDeniedException AccessDeniedException
+     * @throws IOException IOException
+     * @throws ServletException ServletException
      */
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        ResponseDTO dto = new ResponseDTO(ApiCodeUtils.FORBIDDEN.getCode(), ApiCodeUtils.FORBIDDEN.getMsg());
-        ApiResultUtils.write(response, JSONObject.toJSONString(dto));
+        ApiResultUtils.write(response, JSONObject.toJSONString(new ApiResultUtils<>(ApiCodeUtils.FORBIDDEN)));
     }
 }

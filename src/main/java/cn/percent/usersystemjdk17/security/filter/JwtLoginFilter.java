@@ -78,11 +78,14 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         LoginDTO loginDTO = JSON.parseObject(body, LoginDTO.class);
         if (loginDTO == null || CharSequenceUtil.isEmpty(loginDTO.getUsername()) || CharSequenceUtil.isEmpty(loginDTO.getPassword())) {
-            ApiResultUtils.write(response, JSON.toJSONString(new ResponseDTO<>(ApiCodeUtils.LOGIN_USERNAME_OR_PASSWORD.getCode(), ApiCodeUtils.LOGIN_USERNAME_OR_PASSWORD.getMsg())));
+            ApiResultUtils.write(response, JSON.toJSONString(new ApiResultUtils<>(ApiCodeUtils.LOGIN_USERNAME_OR_PASSWORD)));
             return null;
         }
-
         UserEntity userEntity = userEntityService.query().eq("login_acct", loginDTO.getUsername()).one();
+        if (Objects.isNull(userEntity)){
+            ApiResultUtils.write(response, JSON.toJSONString(new ApiResultUtils<>(ApiCodeUtils.USER_NOT_EXIST)));
+            return null;
+        }
         if (Boolean.TRUE.equals(userEntity.getDisable())) {
             ApiResultUtils.write(response, JSON.toJSONString(new ResponseDTO<>(ApiCodeUtils.USER_DISABLE.getCode(), ApiCodeUtils.USER_DISABLE.getMsg())));
             return null;

@@ -22,13 +22,13 @@ mybatis-plus:
 # MySQL 配置
 mysql:
   # MySQL 数据源
-  datasource: 120.24.254.250:3307
+  datasource: 117.72.38.251:3306
   # 数据库名称
   db-name: renrendb
   # 数据库用户名
   username: root
   # 数据库密码
-  password: zpj520996
+  password: mysql_76TdpY
 
 # Spring 配置
 spring:
@@ -82,9 +82,9 @@ spring:
       # Redis 数据库
       database: 0
       # Redis 主机
-      host: 120.24.254.250
+      host: 117.72.38.251
       # Redis 端口
-      port: 36379
+      port: 6379
       # Redis 超时
       timeout: 1000
       # Redis 密码
@@ -102,7 +102,7 @@ jwt:
   access:
     token:
       # 访问令牌的过期时间
-      expiration: 10
+      expiration: 1
   # 刷新令牌配置
   refresh:
     token:

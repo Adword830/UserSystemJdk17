@@ -1,9 +1,9 @@
 package cn.percent.usersystemjdk17.common.utils;
 
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSONObject;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.impl.DefaultClaims;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -22,19 +22,19 @@ public class JwtUtils {
     /**
      * 签名秘钥
      */
-    private static String tokenSignKey = "91E+Ap7Kh+dtVXKku+/XBXYTqjzPBf/Rve7JmV2XTDY=";
+    private static final String tokenSignKey = "91E+Ap7Kh+dtVXKku+/XBXYTqjzPBf/Rve7JmV2XTDY=";
 
     /**
      * 自定义的过期时间
      *
-     * @param userId
-     * @param loginAcct
+     * @param userId          用户id
+     * @param loginAcct       用户名
      * @param tokenExpiration 单位ms
      * @param status          token的类型 是accessToken还是refreshToken
-     * @return
+     * @return token字符串
      */
     public static String createToken(Long userId, String loginAcct, Long tokenExpiration, String status) {
-        String token = Jwts.builder()
+        return Jwts.builder()
                 .setSubject("system")
                 .setExpiration(new Date(System.currentTimeMillis() + tokenExpiration))
                 .claim("userId", userId)
@@ -43,19 +43,18 @@ public class JwtUtils {
                 .signWith(SignatureAlgorithm.HS512, tokenSignKey)
                 .compressWith(CompressionCodecs.GZIP)
                 .compact();
-        return token;
     }
 
     /**
      * 自定义的过期时间
      *
-     * @param userId
-     * @param loginAcct
-     * @param tokenExpiration
-     * @return
+     * @param userId          用户id
+     * @param loginAcct       用户名
+     * @param tokenExpiration 过期时间
+     * @return token字符串
      */
     public static String createToken(String userId, String loginAcct, String tokenExpiration) {
-        String token = Jwts.builder()
+        return Jwts.builder()
                 .setSubject("system")
                 .setExpiration(new Date(System.currentTimeMillis() + tokenExpiration))
                 .claim("userId", userId)
@@ -63,19 +62,18 @@ public class JwtUtils {
                 .signWith(SignatureAlgorithm.HS512, tokenSignKey)
                 .compressWith(CompressionCodecs.GZIP)
                 .compact();
-        return token;
     }
 
     /**
      * 根据参数生成token,默认的过期时间24小时
      *
-     * @param userId
-     * @param loginAcct
-     * @return
+     * @param userId    用户id
+     * @param loginAcct 用户名
+     * @return token字符串
      */
     public static String createToken(Long userId, String loginAcct) {
         long tokenExpiration = 24 * 60 * 60 * 1000;
-        String token = Jwts.builder()
+        return Jwts.builder()
                 .setSubject("system")
                 .setExpiration(new Date(System.currentTimeMillis() + tokenExpiration))
                 .claim("userId", userId)
@@ -83,37 +81,35 @@ public class JwtUtils {
                 .signWith(SignatureAlgorithm.HS512, tokenSignKey)
                 .compressWith(CompressionCodecs.GZIP)
                 .compact();
-        return token;
     }
 
     /**
      * 根据token字符串得到用户id
      *
-     * @param token
-     * @return
+     * @param token token字符串
+     * @return 用户id
      */
     public static Claims getClaims(String token) {
         if (CharSequenceUtil.isEmpty(token)) {
-            return null;
+            return new DefaultClaims();
         }
         Jws<Claims> claimsJws = null;
         try {
             claimsJws = Jwts.parser().setSigningKey(tokenSignKey).parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
-            return null;
+            return new DefaultClaims();
         }
-        Claims claims = claimsJws.getBody();
-        return claims;
+        return claimsJws.getBody();
     }
 
     /**
      * 根据token字符串得到用户id
      *
-     * @param token
-     * @return
+     * @param token token字符串
+     * @return 用户id
      */
     public static Long getUserId(String token) {
-        if (StrUtil.isEmpty(token)) {
+        if (CharSequenceUtil.isEmpty(token)) {
             return null;
         }
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(tokenSignKey).parseClaimsJws(token);
@@ -125,11 +121,11 @@ public class JwtUtils {
     /**
      * 根据token字符串得到用户名称
      *
-     * @param token
-     * @return
+     * @param token token字符串
+     * @return 用户名称
      */
-    public static String getloginAcct(String token) {
-        if (StrUtil.isEmpty(token)) {
+    public static String getLoginAcct(String token) {
+        if (CharSequenceUtil.isEmpty(token)) {
             return "";
         }
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(tokenSignKey).parseClaimsJws(token);

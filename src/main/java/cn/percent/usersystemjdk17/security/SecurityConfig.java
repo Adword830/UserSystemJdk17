@@ -12,6 +12,7 @@ import cn.percent.usersystemjdk17.security.handler.MyLogoutHandler;
 import cn.percent.usersystemjdk17.security.properties.SecurityProperties;
 import cn.percent.usersystemjdk17.security.service.MyUserDetailsService;
 import cn.percent.usersystemjdk17.security.service.TokenService;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -27,6 +28,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+
+import java.util.Scanner;
 
 /**
  * @author: zhangpengju
@@ -173,4 +176,56 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        // 获取到输入的字符串
+        String inputString = scanner.nextLine();
+        scanner.close();
+        // 英文字母个数
+        int letters = 0;
+        // 空格次数
+        int spaces = 0;
+        // 数字个数
+        int digits = 0;
+        // 其他字符个数
+        int others = 0;
+
+        for (int i = 0; i < inputString.length(); i++) {
+            char ch = inputString.charAt(i);
+            if (Character.isLetter(ch)) {
+                // 英文字母
+                letters++;
+                // 跳过本次循环
+                continue;
+            }
+            if (Character.isSpaceChar(ch)) {
+                // 空格
+                spaces++;
+                // 跳过本次循环
+                continue;
+            }
+            if (Character.isDigit(ch)) {
+                // 数字
+                digits++;
+                // 跳过本次循环
+                continue;
+            }
+            // 其他字符个数
+            others++;
+
+        }
+        System.out.println("英文字母个数为:" + letters);
+        System.out.println("空格个数为:" + spaces);
+        System.out.println("数字个数为:" + digits);
+        System.out.println("其他字符个数为:" + others);
+
+    }
+
+    @Test
+    public  void test01(){
+        // 冒泡排序
+
+
+    }
 }

@@ -4,15 +4,29 @@ import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnels;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 @SpringBootTest
 class UserSystemJdk17ApplicationTests {
 
+
     @Test
     void contextLoads() {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        System.out.println(bCryptPasswordEncoder.encode("123456"));
+
+        try (FileInputStream inputStream = new FileInputStream("D:\\test.txt")) {
+            inputStream.available();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         int[] num = {100, 97, 68, 67, 10};
         int find = 67;
         // 折半二分查找
@@ -113,8 +127,9 @@ class UserSystemJdk17ApplicationTests {
         double[] lon = {-180, 0, 180};
         // 纬度范围
         double[] lat = {-90, 0, 90};
-        StringBuilder bitLat= new StringBuilder();
-        StringBuilder bitLon= new StringBuilder();
+        StringBuilder bitLat = new StringBuilder();
+        StringBuilder bitLon = new StringBuilder();
+
         // 先计算纬度的值y x需要把范围切割
         for (int i = 0; i < 10; i++) {
             double minLat = lat[0];
@@ -128,25 +143,25 @@ class UserSystemJdk17ApplicationTests {
             if (minLat <= y && y < midLat) {
                 lat[0] = minLat;
                 lat[2] = midLat;
-                lat[1] = (midLat + minLat) / 2 ;
+                lat[1] = (midLat + minLat) / 2;
                 bitLat.append("0");
             }
             if (midLat <= y && y <= maxLat) {
                 lat[0] = midLat;
                 lat[2] = maxLat;
-                lat[1] = (maxLat +midLat) / 2 ;
+                lat[1] = (maxLat + midLat) / 2;
                 bitLat.append("1");
             }
             if (minLon <= x && x < midLon) {
                 lon[0] = minLon;
                 lon[2] = midLon;
-                lon[1] = (minLon + midLon) / 2 ;
+                lon[1] = (minLon + midLon) / 2;
                 bitLon.append("0");
             }
             if (midLon <= x && x <= maxLon) {
                 lon[0] = midLon;
                 lon[2] = maxLon;
-                lon[1] = (midLon +maxLon) / 2 ;
+                lon[1] = (midLon + maxLon) / 2;
                 bitLon.append("1");
             }
 
@@ -157,5 +172,33 @@ class UserSystemJdk17ApplicationTests {
         System.out.println(bitLon);
 
         return "";
+    }
+
+    /**
+     * Two Sum 两数之和 双for循环优化为map O(n^2)--->O(n)
+     */
+    @Test
+    void test03() {
+        int[] num = {7, 2, 3, 4, 1};
+        int target = 3;
+
+        int[] result = new int[2];
+
+        // 将数组转为map
+        HashMap<Integer, Integer> map = new HashMap<>();
+        // 时间复杂度O(n)
+        for (int i = 0; i < num.length; i++) {
+            if (map.containsKey(target - num[i])) {
+                result[0] = map.get(target - num[i]);
+                result[1] = i;
+            } else {
+                map.put(num[i], i);
+            }
+
+
+        }
+
+        System.out.println("result = " + result[0] + "," + result[1]);
+
     }
 }

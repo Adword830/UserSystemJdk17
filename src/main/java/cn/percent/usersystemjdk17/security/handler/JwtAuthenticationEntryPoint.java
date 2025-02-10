@@ -3,7 +3,6 @@ package cn.percent.usersystemjdk17.security.handler;
 
 import cn.percent.usersystemjdk17.common.utils.ApiCodeUtils;
 import cn.percent.usersystemjdk17.common.utils.ApiResultUtils;
-import cn.percent.usersystemjdk17.security.dto.ResponseDTO;
 import com.alibaba.fastjson2.JSONObject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +24,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        ResponseDTO dto = new ResponseDTO(ApiCodeUtils.NOT_LOGGED_IN.getCode(), ApiCodeUtils.NOT_LOGGED_IN.getMsg());
-        ApiResultUtils.write(response, JSONObject.toJSONString(dto));
+        ApiResultUtils.write(response, JSONObject.toJSONString(new ApiResultUtils<>(ApiCodeUtils.NOT_LOGGED_IN)));
     }
 }
