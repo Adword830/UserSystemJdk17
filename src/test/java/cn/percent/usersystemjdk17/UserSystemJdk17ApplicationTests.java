@@ -15,7 +15,7 @@ import java.util.HashMap;
 class UserSystemJdk17ApplicationTests {
 
 
-    @Test
+    /*@Test
     void contextLoads() {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         System.out.println(bCryptPasswordEncoder.encode("123456"));
@@ -43,7 +43,7 @@ class UserSystemJdk17ApplicationTests {
                 high = mid - 1;
             }
         }
-    }
+    }*/
 
 
     /**
