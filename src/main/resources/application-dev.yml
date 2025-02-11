@@ -144,3 +144,4 @@ security:
     - /system/user/register
     - /v2/api-docs
     - /doc.html
+    - /wechat/checkSignature

@@ -9,7 +9,7 @@ WORKDIR /app
 COPY target/*.jar /app/UserSystemJdk17.jar
 
 # 暴露应用程序的端口（如果需要的话）
-EXPOSE 80
+EXPOSE 8080
 
 # 定义容器启动时执行的命令
 CMD ["java", "-jar", "UserSystemJdk17.jar"]
